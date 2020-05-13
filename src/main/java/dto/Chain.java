@@ -1,6 +1,6 @@
 package dto;
 
-public class Chain {
+public class Chain implements Comparable<Chain> {
 
     private Person root;
     private Person end;
@@ -16,6 +16,24 @@ public class Chain {
 
 
     // Generated functions
+
+    @Override
+    public String toString() {
+        return "Country, " + root.getId() + ", " + this.weight + "; ";
+//        return "Chain{" +
+//                "root=" + root.getId() +
+//                ", end=" + end.getId() +
+//                ", weight=" + weight +
+//                '}';
+    }
+
+    @Override
+    public int compareTo(Chain other) {
+        if (this.weight != other.weight)
+            return Integer.compare(this.weight, other.weight);
+        else
+            return Integer.compare(other.end.getDiagnosed_ts(), this.end.getDiagnosed_ts());
+    }
 
     public Person getRoot() {
         return root;
