@@ -11,8 +11,8 @@ public class Chain {
     public Chain(Person root, Person end) {
         this.root = root;
         this.end = end;
+        this.weight = end.getWeight();
     }
-
 
 
     // Generated functions
