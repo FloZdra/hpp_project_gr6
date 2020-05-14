@@ -1,6 +1,6 @@
 package dto;
 
-public class Chain {
+public class Chain implements Comparable<Chain> {
 
     private Person root;
     private Person end;
@@ -11,11 +11,31 @@ public class Chain {
     public Chain(Person root, Person end) {
         this.root = root;
         this.end = end;
+        this.weight = end.getWeight();
     }
 
 
-
     // Generated functions
+
+    @Override
+    public String toString() {
+        return "Country, " + root.getId() + ", " + this.weight + "; ";
+//        return "Chain{" +
+//                "root=" + root.getId() +
+//                ", end=" + end.getId() +
+//                ", weight=" + weight +
+//                '}';
+    }
+
+    @Override
+    public int compareTo(Chain other) {
+        // If the weights are different, we compare in order to find the most heavy,
+        // otherwise they are equals, we compare the diagnosed time to find the oldest (so we invert the parameters)
+        if (this.weight != other.weight)
+            return Integer.compare(this.weight, other.weight);
+        else
+            return Integer.compare(other.root.getDiagnosed_ts(), this.root.getDiagnosed_ts());
+    }
 
     public Person getRoot() {
         return root;
