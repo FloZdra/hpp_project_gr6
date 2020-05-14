@@ -15,6 +15,7 @@ public class FileReaderTest {
     @BeforeAll
     public static void setup() {
         fileReader = new FileReader();
+        System.out.println("test1");
     }
 
     @Test
@@ -22,6 +23,7 @@ public class FileReaderTest {
     @DisplayName("Verify that file can open")
     public void testOpenFile() {
         fileReader.openFile(getClass().getResource("/data/20/France.csv"));
+        System.out.println("test2");
     }
 
     @Test
@@ -32,9 +34,22 @@ public class FileReaderTest {
             String line = fileReader.readLine();
             System.out.println(line);
             assertNotNull(line);
+            System.out.println("test2");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    @Test
+    @Order(3)
+    @DisplayName("Verify that file is closed")
+    public void testCloseFile() {
+        fileReader.closeFile();
+        String expectedMessage = "Stream closed";
+        Exception exception = assertThrows(IOException.class, () -> {
+            fileReader.getInputStream().available();
+        });
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
 }
