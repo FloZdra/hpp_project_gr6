@@ -22,6 +22,8 @@ public class Main {
     private static final URL spain = Main.class.getResource("/data/5000/Spain.csv");
 
     public static void main(String[] args) {
+
+
         List<URL> files = new ArrayList<>();
         urls.add(france);
         urls.add(italy);
@@ -29,6 +31,8 @@ public class Main {
         CovidTracer covidTracer = new CovidTracer(urls);
 
         covidTracer.launchAnalysis();
+
+
     }
 
 

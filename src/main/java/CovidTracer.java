@@ -1,13 +1,11 @@
 import dto.Chain;
 import dto.Person;
 import dto.Tree;
+import org.apache.commons.io.IOUtils;
 import utils.FileReader;
 import utils.Parser;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,7 +13,12 @@ import java.util.List;
 import java.util.ListIterator;
 
 public class CovidTracer {
+
     List<URL> url_files;
+    PrintWriter writer = null;
+
+    List<Tree> trees = new ArrayList<>();
+    List<Chain> global_chains = new ArrayList<>();
 
     public CovidTracer(List<URL> urls) {
         url_files = urls;
@@ -25,25 +28,28 @@ public class CovidTracer {
      * Main function of program
      **/
     public void launchAnalysis() {
-        List<Person> people = new ArrayList<>();
 
+        // Open the file we will enter results in
         try {
-            analyseFiles(people);
-        } catch (
-                IOException e) {
+            writer = new PrintWriter(new File("target/classes/output_generated/output.csv"));
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
-        algorithm(people);
+        // Start analysing files
+        analyseFiles();
+
+        writer.close();
+
+        // Copy output file from target to src
+        copyFiles();
     }
 
     /**
      * Main function of project.
      * Create output result in new file.
-     *
-     * @throws IOException
      */
-    public void analyseFiles(List<Person> people) throws IOException {
+    public void analyseFiles() {
         Parser parser = new Parser();
         List<FileReader> fileReaders = new ArrayList<>();
 
@@ -69,6 +75,7 @@ public class CovidTracer {
 
         boolean end;
         do {
+
             // Find the file with the oldest person
             Person next_person = initialList.get(0);
             for (Person person : initialList) {
@@ -77,8 +84,8 @@ public class CovidTracer {
                 }
             }
 
-            Person cloned_person = next_person.clone();
-            people.add(cloned_person);
+            // Add the new person into the memory, and start the process
+            addNewPerson(next_person.clone());
 
             int index_next_person = initialList.indexOf(next_person);
 
@@ -96,70 +103,67 @@ public class CovidTracer {
         while (!end);
     }
 
-    public void algorithm(List<Person> people) {
+    public void addNewPerson(Person new_person) {
 
-        List<Tree> trees = new ArrayList<>();
-        List<Chain> global_chains = new ArrayList<>();
-        PrintWriter writer = null;
-        try {
-            writer = new PrintWriter(new File("src/main/resources/output_generated/" + "output.csv"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        for (Person p : people) {
-            // Clear all the chains
-            global_chains.clear();
+        if (writer != null) {
 
             // Recalculate every score of every chain
             ListIterator<Tree> iterator = trees.listIterator();
             while (iterator.hasNext()) {
                 Tree t = iterator.next();
-                t.updateChains(p.getDiagnosed_ts());
+                t.updateChains(new_person.getDiagnosed_ts());
                 if (t.getRoot() == null)
                     iterator.remove();
             }
 
             // If the person is contaminated by someone unknown
-            if (p.getContaminated_by_id() == -1) {
-                trees.add(new Tree(p));
+            if (new_person.getContaminated_by_id() == -1) {
+                trees.add(new Tree(new_person));
             } else {
                 // If we found the person who contaminated the new person
                 boolean added = false;
                 for (Tree t : trees) {
-                    if (t.addPerson(p, null)) {
+                    if (t.addPerson(new_person, null)) {
                         added = true;
                         break;
                     }
                 }
                 // If we didn't find him, we create a new tree where the person will be the root
                 if (!added) {
-                    trees.add(new Tree(p));
+                    trees.add(new Tree(new_person));
                 }
             }
 
-
+            // Get all the chains
+            List<Chain> global_chains = new ArrayList<>();
             for (Tree t : trees) {
                 global_chains.addAll(t.getChains());
             }
 
-
             global_chains.sort(Collections.reverseOrder());
-            List<Chain> chains_to_print = global_chains.subList(0, Math.min(global_chains.size(), 3));
 
             StringBuilder sb = new StringBuilder();
 
-            for (Chain c : chains_to_print) {
-                sb.append(c.toString());
-            }
-            writer.write(sb.toString().trim() + "\n");
+            for (int i = 0; i < 3 && i < global_chains.size(); i++)
+                sb.append(global_chains.get(i).toString());
+
+            writer.write(sb.toString().trim() + "\n"); // Remove trim() for comparing with Arnette's results
         }
-
-        writer.close();
-
-        System.out.println("\nFin du programme");
     }
 
+    public void copyFiles() {
+
+        // Copy generated output from target to src/main/resources
+        try {
+            InputStream inputStream = getClass().getResource("output_generated/output.csv").openStream();
+            FileOutputStream fileOS = new FileOutputStream("src/main/resources/output_generated/output.csv");
+            int i = IOUtils.copy(inputStream, fileOS);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 }
 

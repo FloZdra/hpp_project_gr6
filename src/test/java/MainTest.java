@@ -7,6 +7,6 @@ public class MainTest {
     @Test
     @DisplayName("This test should run f everything  is well configured")
     public void testMain() {
-        assertEquals(2, 1+1);
+        assertEquals(2, 1 + 1);
     }
 }

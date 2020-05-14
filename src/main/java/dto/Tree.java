@@ -27,7 +27,7 @@ public class Tree {
         if (current_person == null) current_person = this.root;
 
         if (new_person.getContaminated_by_id() == current_person.getId()) {
-            if(current_person.getWeight() == 0)
+            if (current_person.getWeight() == 0)
                 return false;
             current_person.addInfected(new_person);
             new_person.setContaminated_by(current_person);
@@ -46,7 +46,9 @@ public class Tree {
             return true;
         } else {
             for (Person p : current_person.getInfect()) {
-                return addPerson(new_person, p);
+                if (addPerson(new_person, p)) {
+                    return true;
+                }
             }
             return false;
         }

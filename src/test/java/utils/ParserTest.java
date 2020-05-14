@@ -16,7 +16,7 @@ class ParserTest {
 
     private static FileReader fileReader;
     private static final Parser parser = new Parser();
-    private static final URL testFile = ParserTest.class.getResource("/parserTest/testFileReader.csv") ;
+    private static final URL testFile = ParserTest.class.getResource("/parserTest/testFileReader.csv");
 
     @BeforeAll
     static void setUp() {
@@ -26,16 +26,10 @@ class ParserTest {
 
     @Test
     @DisplayName("Read one person from testFile")
-    void parseLineTest(){
-        String line;
-        Person person = new Person("Test", 8,1578494160, 4);
-        try {
-            line = fileReader.readLine();
-            Person read_person = parser.parseLine("Test", line);
-            assertEquals(person, read_person);
-        } catch (IOException e) {
-            System.err.println("Cannot read file " + testFile);
-            e.printStackTrace();
-        }
+    void parseLineTest() {
+        Person person = new Person("Test", 8, 1578494160, 4);
+        String line = fileReader.readLine();
+        Person read_person = parser.parseLine("Test", line);
+        assertEquals(person, read_person);
     }
 }

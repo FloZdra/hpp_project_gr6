@@ -28,12 +28,8 @@ public class FileReaderTest {
     @Order(2)
     @DisplayName("Verify that we can read something")
     public void testReadFile() {
-        try {
-            String line = fileReader.readLine();
-            assertNotNull(line);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String line = fileReader.readLine();
+        assertNotNull(line);
     }
 
     @Test

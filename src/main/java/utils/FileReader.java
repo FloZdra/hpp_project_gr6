@@ -32,13 +32,17 @@ public class FileReader {
         }
     }
 
-    public String readLine() throws IOException {
+    public String readLine() {
         if (sc.hasNextLine()) {
             return sc.nextLine();
         } else {
             // note that Scanner suppresses exceptions
             if (sc.ioException() != null) {
-                throw sc.ioException();
+                try {
+                    throw sc.ioException();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
             // end of file
             return "";
