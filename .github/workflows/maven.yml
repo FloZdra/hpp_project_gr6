@@ -27,7 +27,7 @@ jobs:
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           ${{ runner.os }}-maven-
-    - name: Run the Maven test phase
+    - name: Run the Maven compile phase
       run: mvn -B compile --file pom.xml
     
   test:
@@ -49,8 +49,6 @@ jobs:
           ${{ runner.os }}-maven-
     - name: Run the Maven test phase
       run: mvn -B test --file pom.xml
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
       
   package:
     name: Package
