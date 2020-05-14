@@ -24,7 +24,7 @@ public class CovidTracer {
     /**
      * Main function of program
      **/
-    public void launchAnalysis() {
+    public void launchAnalysis() throws FileNotFoundException {
         List<Person> people = new ArrayList<>();
 
         try {
@@ -96,7 +96,7 @@ public class CovidTracer {
         while (!end);
     }
 
-    public void algorithm(List<Person> people) {
+    public void algorithm(List<Person> people) throws FileNotFoundException {
 
 //        // UNIT TEST 2
 //        List<Person> people = new ArrayList<>();
@@ -133,6 +133,7 @@ public class CovidTracer {
 
         List<Tree> trees = new ArrayList<>();
         List<Chain> global_chains = new ArrayList<>();
+        PrintWriter writer = new PrintWriter(new File("src/main/resources/output_generated/" + "output.csv"));
 
         for (Person p : people) {
             // Clear all the chains
@@ -172,23 +173,17 @@ public class CovidTracer {
 
 
             global_chains.sort(Collections.reverseOrder());
+            List<Chain> chains_to_print = global_chains.subList(0, Math.min(global_chains.size(), 3));
 
+            StringBuilder sb = new StringBuilder();
 
-            try (PrintWriter writer = new PrintWriter(new File(Main.class.getResource("output_test").getPath()+"/output.csv"))) {
-
-                StringBuilder sb = new StringBuilder();
-
-
-                for (Chain c : global_chains) {
-                    sb.append(c.toString());
-                    //System.out.print(c.toString());
-                }
-                sb.append('\n');
-                writer.write(sb.toString());
-            }catch (FileNotFoundException e) {
-                System.out.println(e.getMessage());
+            for (Chain c : chains_to_print) {
+                sb.append(c.toString());
             }
+            writer.write(sb.toString() + "\n");
         }
+
+        writer.close();
 
         System.out.println("\nFin du programme");
     }

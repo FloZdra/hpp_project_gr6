@@ -3,6 +3,7 @@ import dto.Person;
 import dto.Tree;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.*;
 
 import utils.FileReader;
@@ -20,7 +21,7 @@ public class Main {
     private static final URL italy = Main.class.getResource("/data/5000/Italy.csv");
     private static final URL spain = Main.class.getResource("/data/5000/Spain.csv");
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
         List<URL> files = new ArrayList<>();
         urls.add(france);
         urls.add(italy);
