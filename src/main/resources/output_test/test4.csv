@@ -1,9 +1,8 @@
 France, 1, 10;
 France, 1, 20;
-France, 1, 20; France, 3, 10
-France, 1, 20; France, 3, 10; France, 4, 10
-France, 3, 20; France, 4, 10; France, 1, 8
-France, 3, 14; France, 4, 14; France, 1, 8
-France, 3, 14; France, 4, 4
-France, 3, 10; France, 8, 10
-
+France, 1, 20; France, 3, 10;
+France, 1, 20; France, 3, 10; France, 4, 10;
+France, 3, 20; France, 4, 10; France, 1, 8;
+France, 3, 14; France, 4, 14; France, 1, 8;
+France, 3, 14; France, 4, 4;
+France, 3, 10; France, 8, 10;
