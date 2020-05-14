@@ -7,6 +7,7 @@ import java.util.Objects;
 
 public class Person implements Comparable<Person> {
 
+    private String country;
     private int id;
     private int diagnosed_ts;
     private int contaminated_by_id;
@@ -14,7 +15,8 @@ public class Person implements Comparable<Person> {
     private Person contaminated_by;
     private List<Person> infect;
 
-    public Person(int id, int diagnosed_ts, int contaminated_by_id) {
+    public Person(String country, int id, int diagnosed_ts, int contaminated_by_id) {
+        this.country = country;
         this.id = id;
         this.diagnosed_ts = diagnosed_ts;
         this.contaminated_by_id = contaminated_by_id;
@@ -75,6 +77,14 @@ public class Person implements Comparable<Person> {
     @Override
     public int compareTo(Person other) {
         return Integer.compare(this.diagnosed_ts, other.diagnosed_ts);
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 
     public int getId() {

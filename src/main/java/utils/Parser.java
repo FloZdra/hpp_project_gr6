@@ -11,7 +11,7 @@ import java.io.IOException;
 public class Parser {
     private static final String COMMA_DELIMITER = ",";
 
-    public Person parseLine(String line) {
+    public Person parseLine(String country, String line) {
         String[] values = line.split(COMMA_DELIMITER);
         String person_id = values[0];
         String timestamp = values[4]
@@ -20,11 +20,12 @@ public class Parser {
         String contaminated_by = values[5].substring(1); // Remove first blank space
 
         Person personToReturn = new Person(
+                country,
                 Integer.parseInt(person_id),
                 Integer.parseInt(timestamp),
                 contaminated_by.equals("unknown") ? -1 : Integer.parseInt(contaminated_by)
         );
-        System.out.println(personToReturn);
+
         return personToReturn;
     }
 }

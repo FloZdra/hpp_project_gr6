@@ -1,9 +1,12 @@
 import dto.Chain;
 import dto.Person;
 import dto.Tree;
+
 import java.util.*;
+
 import utils.FileReader;
 import utils.Parser;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -17,13 +20,16 @@ public class Main {
     private static final URL spain = Main.class.getResource("/data/20/Spain.csv");
 
     public static void main(String[] args) {
-        System.out.println("test");
-        Person myPerson = new Person(1, 1, 1);
+
+        List<Person> people = new ArrayList<>();
+
         try {
-            analyseFiles();
+            analyseFiles(people);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        algorithm(people);
     }
 
     /**
@@ -32,7 +38,7 @@ public class Main {
      *
      * @throws IOException
      */
-    public static void analyseFiles() throws IOException {
+    public static void analyseFiles(List<Person> people) throws IOException {
         Parser parser = new Parser();
 
         urls.add(france);
@@ -58,10 +64,10 @@ public class Main {
             do {
                 String read_string = fileReader.readLine();
                 if (!read_string.equals("")) {
-                    Person read_person = parser.parseLine(read_string);
+                    Person read_person = parser.parseLine(fileReader.getCountry(), read_string);
 
                     // Add person to tree
-                    // ...
+                    people.add(read_person);
                 } else {
                     // end of file
                     end = true;
@@ -70,9 +76,9 @@ public class Main {
             } while (!end);
         }
     }
-  
-  public void algorithm() {
-    
+
+    public static void algorithm(List<Person> people) {
+
 //        // UNIT TEST 2
 //        List<Person> people = new ArrayList<>();
 //        people.add(new Person(1, 1584540000, -1));
@@ -97,15 +103,14 @@ public class Main {
 //        people.add(new Person(7, 1586390400, 5));
 //        people.add(new Person(8, 1586908800, 6));
 
-        // UNIT TEST 9
-        List<Person> people = new ArrayList<>();
-        people.add(new Person(1, 1583071200, -1));
-        people.add(new Person(2, 1583676000, 1));
-        people.add(new Person(3, 1583679600, 2));
-        people.add(new Person(4, 1584280800, 3));
-        people.add(new Person(5, 1584284400, 4));
-        people.add(new Person(6, 1585501200, 4));
-
+//        // UNIT TEST 9
+//        List<Person> people = new ArrayList<>();
+//        people.add(new Person(1, 1583071200, -1));
+//        people.add(new Person(2, 1583676000, 1));
+//        people.add(new Person(3, 1583679600, 2));
+//        people.add(new Person(4, 1584280800, 3));
+//        people.add(new Person(5, 1584284400, 4));
+//        people.add(new Person(6, 1585501200, 4));
 
         List<Tree> trees = new ArrayList<>();
         List<Chain> global_chains = new ArrayList<>();
@@ -153,5 +158,5 @@ public class Main {
         }
 
         System.out.println("\nFin du programme");
-  }
+    }
 }

@@ -28,10 +28,10 @@ class ParserTest {
     @DisplayName("Read one person from testFile")
     void parseLineTest(){
         String line;
-        Person person = new Person(8,1578494160, 4);
+        Person person = new Person("Test", 8,1578494160, 4);
         try {
             line = fileReader.readLine();
-            Person read_person = parser.parseLine(line);
+            Person read_person = parser.parseLine("Test", line);
             assertEquals(person, read_person);
         } catch (IOException e) {
             System.err.println("Cannot read file " + testFile);

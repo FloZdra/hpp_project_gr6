@@ -2,6 +2,9 @@ package utils;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+
+import org.apache.commons.io.FilenameUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -16,8 +19,10 @@ public class FileReader {
 
     private InputStream inputStream = null;
     private Scanner sc = null;
+    private String country;
 
     public void openFile(URL path) {
+        this.country = FilenameUtils.getBaseName(path.getPath());
         try {
             inputStream = path.openStream();
             sc = new Scanner(inputStream, StandardCharsets.UTF_8);
@@ -55,6 +60,11 @@ public class FileReader {
     }
 
     // Generated functions
+
+    public String getCountry() {
+        return country;
+    }
+
     public InputStream getInputStream() {
         return inputStream;
     }

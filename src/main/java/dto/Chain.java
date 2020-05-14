@@ -19,7 +19,7 @@ public class Chain implements Comparable<Chain> {
 
     @Override
     public String toString() {
-        return "Country, " + root.getId() + ", " + this.weight + "; ";
+        return root.getCountry() + ", " + root.getId() + ", " + this.weight + "; ";
 //        return "Chain{" +
 //                "root=" + root.getId() +
 //                ", end=" + end.getId() +
