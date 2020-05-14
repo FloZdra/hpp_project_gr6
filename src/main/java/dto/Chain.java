@@ -29,10 +29,12 @@ public class Chain implements Comparable<Chain> {
 
     @Override
     public int compareTo(Chain other) {
+        // If the weights are different, we compare in order to find the most heavy,
+        // otherwise they are equals, we compare the diagnosed time to find the oldest (so we invert the parameters)
         if (this.weight != other.weight)
             return Integer.compare(this.weight, other.weight);
         else
-            return Integer.compare(other.end.getDiagnosed_ts(), this.end.getDiagnosed_ts());
+            return Integer.compare(other.root.getDiagnosed_ts(), this.root.getDiagnosed_ts());
     }
 
     public Person getRoot() {
