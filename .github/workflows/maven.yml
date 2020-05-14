@@ -32,4 +32,4 @@ jobs:
     - name: Codecov
       uses: codecov/codecov-action@v1.0.7
       with:
-        token: ${{ c4542562-73a9-4ac8-9157-30db4b285aa4 }} # not required for public repos
+        token: c4542562-73a9-4ac8-9157-30db4b285aa4 # not required for public repos
