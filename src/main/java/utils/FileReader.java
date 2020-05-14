@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 /**
@@ -16,20 +17,19 @@ public class FileReader {
     private InputStream inputStream = null;
     private Scanner sc = null;
 
-    void openFile(URL path) {
+    public void openFile(URL path) {
         try {
             inputStream = path.openStream();
-            sc = new Scanner(inputStream, "UTF-8");
+            sc = new Scanner(inputStream, StandardCharsets.UTF_8);
         } catch (IOException e) {
             System.err.println("File not found");
             e.printStackTrace();
         }
     }
 
-    String readLine() throws IOException {
+    public String readLine() throws IOException {
         if (sc.hasNextLine()) {
-            String line = sc.nextLine();
-            return line;
+            return sc.nextLine();
         } else {
             // note that Scanner suppresses exceptions
             if (sc.ioException() != null) {
@@ -40,7 +40,7 @@ public class FileReader {
         }
     }
 
-    void closeFile() {
+    public void closeFile() {
         if (inputStream != null) {
             try {
                 inputStream.close();
@@ -54,4 +54,12 @@ public class FileReader {
         }
     }
 
+    // Generated functions
+    public InputStream getInputStream() {
+        return inputStream;
+    }
+
+    public Scanner getSc() {
+        return sc;
+    }
 }
