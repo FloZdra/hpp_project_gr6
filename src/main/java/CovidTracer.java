@@ -4,7 +4,10 @@ import dto.Tree;
 import utils.FileReader;
 import utils.Parser;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -169,8 +172,22 @@ public class CovidTracer {
 
 
             global_chains.sort(Collections.reverseOrder());
-            for (Chain c : global_chains) System.out.print(c.toString());
-            System.out.print('\n');
+
+
+            try (PrintWriter writer = new PrintWriter(new File(Main.class.getResource("output_test").getPath()+"/output.csv"))) {
+
+                StringBuilder sb = new StringBuilder();
+
+
+                for (Chain c : global_chains) {
+                    sb.append(c.toString());
+                    //System.out.print(c.toString());
+                }
+                sb.append('\n');
+                writer.write(sb.toString());
+            }catch (FileNotFoundException e) {
+                System.out.println(e.getMessage());
+            }
         }
 
         System.out.println("\nFin du programme");
