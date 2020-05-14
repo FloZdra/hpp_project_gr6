@@ -5,8 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
-public class Person implements Comparable<Person> {
-
+public class Person implements Comparable<Person>, Cloneable {
     private String country;
     private int id;
     private int diagnosed_ts;
@@ -49,6 +48,12 @@ public class Person implements Comparable<Person> {
     }
 
     // Generated functions
+
+    @Override
+    public Person clone() {
+        //return super.clone();
+        return new Person(this.country, this.id, this.diagnosed_ts, this.contaminated_by_id);
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -134,5 +139,4 @@ public class Person implements Comparable<Person> {
     public void setInfect(List<Person> infect) {
         this.infect = infect;
     }
-
 }
