@@ -3,8 +3,6 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import utils.FileReader;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -16,7 +14,7 @@ class CovidTracerTest {
     private static final ArrayList<URL> urls = new ArrayList<>();
     private static CovidTracer covidTracer;
 
-    private void testCovidTracer(URL output_test) throws MalformedURLException {
+    private void covidTracerTest(URL output_test) throws MalformedURLException {
 
         covidTracer = new CovidTracer(urls);
         covidTracer.launchAnalysis();
@@ -45,7 +43,7 @@ class CovidTracerTest {
         urls.add(getClass().getResource("input_test/test1/Spain.csv"));
 
         URL output_test = getClass().getResource("output_test/test1.csv");
-        testCovidTracer(output_test);
+        covidTracerTest(output_test);
     }
 
     @Test
@@ -57,7 +55,7 @@ class CovidTracerTest {
         urls.add(getClass().getResource("input_test/test2/France.csv"));
 
         URL output_test = getClass().getResource("output_test/test2.csv");
-        testCovidTracer(output_test);
+        covidTracerTest(output_test);
     }
 
     @Test
@@ -70,7 +68,7 @@ class CovidTracerTest {
 
         URL output_test = getClass().getResource("output_test/test3.csv");
 
-        testCovidTracer(output_test);
+        covidTracerTest(output_test);
     }
 
     @Test
@@ -83,7 +81,7 @@ class CovidTracerTest {
 
         URL output_test = getClass().getResource("output_test/test4.csv");
 
-        testCovidTracer(output_test);
+        covidTracerTest(output_test);
     }
 
     @Test
@@ -96,7 +94,7 @@ class CovidTracerTest {
 
         URL output_test = getClass().getResource("output_test/test5.csv");
 
-        testCovidTracer(output_test);
+        covidTracerTest(output_test);
     }
 
     @Test
@@ -111,7 +109,7 @@ class CovidTracerTest {
 
         URL output_test = getClass().getResource("output_test/test6.csv");
 
-        testCovidTracer(output_test);
+        covidTracerTest(output_test);
     }
 
     @Test
@@ -124,7 +122,7 @@ class CovidTracerTest {
 
         URL output_test = getClass().getResource("output_test/test7.csv");
 
-        testCovidTracer(output_test);
+        covidTracerTest(output_test);
     }
 
     @Test
@@ -137,7 +135,7 @@ class CovidTracerTest {
 
         URL output_test = getClass().getResource("output_test/test8.csv");
 
-        testCovidTracer(output_test);
+        covidTracerTest(output_test);
     }
 
     @Test
@@ -150,6 +148,6 @@ class CovidTracerTest {
 
         URL output_test = getClass().getResource("output_test/test9.csv");
 
-        testCovidTracer(output_test);
+        covidTracerTest(output_test);
     }
 }
