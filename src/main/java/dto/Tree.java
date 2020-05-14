@@ -23,23 +23,12 @@ public class Tree {
                 '}';
     }
 
-    public boolean addPerson(Person new_person) {
-        if (new_person.getContaminated_by_id() == root.getId()) {
-            root.addInfected(new_person);
-            new_person.setContaminated_by(root);
-            return true;
-        } else {
-            for (Person p : root.getInfect()) {
-                return addPerson(new_person, p);
-            }
-            return false;
-        }
-    }
-
     public boolean addPerson(Person new_person, Person current_person) {
         if (current_person == null) current_person = this.root;
 
         if (new_person.getContaminated_by_id() == current_person.getId()) {
+            if(current_person.getWeight() == 0)
+                return false;
             current_person.addInfected(new_person);
             new_person.setContaminated_by(current_person);
             new_person.setWeight(current_person.getWeight() + 10);
