@@ -1,9 +1,9 @@
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import utils.FileReader;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -12,11 +12,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class CovidTracerTest {
 
     private static final ArrayList<URL> urls = new ArrayList<>();
-    private static CovidTracer covidTracer;
 
-    private void covidTracerTest(URL output_test) throws MalformedURLException {
+    private void covidTracerTest(URL output_test) {
 
-        covidTracer = new CovidTracer(urls);
+        CovidTracer covidTracer = new CovidTracer(urls);
         covidTracer.launchAnalysis();
 
         FileReader fr_expected = new FileReader(), fr_actual = new FileReader();
@@ -32,12 +31,16 @@ class CovidTracerTest {
         fr_actual.closeFile();
     }
 
+    @BeforeEach
+    void cleanUrls(){
+        urls.clear();
+    }
+
     @Test
     @Order(1)
     @DisplayName("Test 1")
-    void covidTracerTest1() throws MalformedURLException {
+    void covidTracerTest1() {
 
-        urls.clear();
         urls.add(getClass().getResource("input_test/test1/France.csv"));
         urls.add(getClass().getResource("input_test/test1/Italy.csv"));
         urls.add(getClass().getResource("input_test/test1/Spain.csv"));
@@ -49,9 +52,8 @@ class CovidTracerTest {
     @Test
     @Order(2)
     @DisplayName("Test 2")
-    void covidTracerTest2() throws MalformedURLException {
+    void covidTracerTest2() {
 
-        urls.clear();
         urls.add(getClass().getResource("input_test/test2/France.csv"));
 
         URL output_test = getClass().getResource("output_test/test2.csv");
@@ -61,9 +63,8 @@ class CovidTracerTest {
     @Test
     @Order(3)
     @DisplayName("Test 3")
-    void covidTracerTest3() throws MalformedURLException {
+    void covidTracerTest3() {
 
-        urls.clear();
         urls.add(getClass().getResource("input_test/test3/France.csv"));
 
         URL output_test = getClass().getResource("output_test/test3.csv");
@@ -74,9 +75,8 @@ class CovidTracerTest {
     @Test
     @Order(4)
     @DisplayName("Test 4")
-    void covidTracerTest4() throws MalformedURLException {
+    void covidTracerTest4() {
 
-        urls.clear();
         urls.add(getClass().getResource("input_test/test4/France.csv"));
 
         URL output_test = getClass().getResource("output_test/test4.csv");
@@ -87,9 +87,8 @@ class CovidTracerTest {
     @Test
     @Order(5)
     @DisplayName("Test 5")
-    void covidTracerTest5() throws MalformedURLException {
+    void covidTracerTest5() {
 
-        urls.clear();
         urls.add(getClass().getResource("input_test/test5/France.csv"));
 
         URL output_test = getClass().getResource("output_test/test5.csv");
@@ -100,9 +99,8 @@ class CovidTracerTest {
     @Test
     @Order(6)
     @DisplayName("Test 6")
-    void covidTracerTest6() throws MalformedURLException {
+    void covidTracerTest6() {
 
-        urls.clear();
         urls.add(getClass().getResource("input_test/test6/France.csv"));
         urls.add(getClass().getResource("input_test/test6/Italy.csv"));
         urls.add(getClass().getResource("input_test/test6/Spain.csv"));
@@ -115,9 +113,8 @@ class CovidTracerTest {
     @Test
     @Order(7)
     @DisplayName("Test 7")
-    void covidTracerTest7() throws MalformedURLException {
+    void covidTracerTest7() {
 
-        urls.clear();
         urls.add(getClass().getResource("input_test/test7/France.csv"));
 
         URL output_test = getClass().getResource("output_test/test7.csv");
@@ -128,9 +125,8 @@ class CovidTracerTest {
     @Test
     @Order(8)
     @DisplayName("Test 8")
-    void covidTracerTest8() throws MalformedURLException {
+    void covidTracerTest8() {
 
-        urls.clear();
         urls.add(getClass().getResource("input_test/test8/France.csv"));
 
         URL output_test = getClass().getResource("output_test/test8.csv");
@@ -141,9 +137,8 @@ class CovidTracerTest {
     @Test
     @Order(9)
     @DisplayName("Test 9")
-    void covidTracerTest9() throws MalformedURLException {
+    void covidTracerTest9() {
 
-        urls.clear();
         urls.add(getClass().getResource("input_test/test9/France.csv"));
 
         URL output_test = getClass().getResource("output_test/test9.csv");
