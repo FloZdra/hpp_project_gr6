@@ -153,7 +153,7 @@ class readNewPersonRunnable implements Runnable {
     public void readNewPerson() {
         boolean end = false;
         do {
-            System.out.println("Read new person started");
+            //System.out.println("Read new person started");
             // Add a new person to the queue
             try {
                 // Find the file with the oldest person
@@ -176,10 +176,12 @@ class readNewPersonRunnable implements Runnable {
                 e.printStackTrace();
             }
             end = fileReaders.isEmpty();
-            System.out.println("Read new person ended");
+            //System.out.println("Read new person ended");
+            //System.out.println("Blocking queue read contains : " + blockingQueueRead.size());
+
         }
         while (!end);
-        System.out.println("Read has terminated");
+        //System.out.println("Read has terminated");
     }
 }
 
@@ -188,6 +190,15 @@ class addNewPersonRunnable implements Runnable {
     BlockingQueue<ArrayList<Tree>> blockingQueueWrite;
     List<Tree> trees;
     boolean readerIsAlive;
+
+    public static ArrayList<Tree> cloneTrees(List<Tree> list) {
+        ArrayList<Tree> clone = new ArrayList<Tree>(list.size());
+
+        for (Tree item : list) {
+            clone.add(item.clone());
+        }
+        return clone;
+    }
 
     public addNewPersonRunnable(BlockingQueue<Person> blockingQueueRead, BlockingQueue<ArrayList<Tree>> blockingQueueWrite, boolean readerIsAlive) {
         this.blockingQueueRead = blockingQueueRead;
@@ -201,9 +212,8 @@ class addNewPersonRunnable implements Runnable {
     }
 
     public void addNewPerson() {
-        while () {
-            System.out.println("State of reader" + readerIsAlive);
-            System.out.println("addNewPerson thread started size queue " + blockingQueueRead.size());
+        while (CovidTracer.readThread.isAlive() || !blockingQueueRead.isEmpty()) {
+            //System.out.println("Add New Person thread started");
             try {
                 Person new_person = blockingQueueRead.take();
 
@@ -233,12 +243,13 @@ class addNewPersonRunnable implements Runnable {
                         trees.add(new Tree(new_person));
                     }
                 }
-                blockingQueueWrite.put(new ArrayList<>(trees));
+                blockingQueueWrite.put(cloneTrees(trees));
 
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println("addNewPerson thread Ended");
+            //System.out.println("Add New Person thread Ended");
+            //System.out.println("Blocking queue write contains : " + blockingQueueWrite.size());
         }
     }
 }
@@ -261,13 +272,12 @@ class writeFileRunnable implements Runnable {
     }
 
     public void writePersonToFile() {
-        while (adderIsAlive) {
-            System.out.println("State of adder" + adderIsAlive);
-            System.out.println("Write person threat started size queue " + blockingQueueWrite.size());
+        while (CovidTracer.addThread.isAlive() || !blockingQueueWrite.isEmpty()) {
+            //System.out.println("Write person threat started");
             if (writer != null) {
                 try {
                     trees = blockingQueueWrite.take();
-                    System.out.println(trees.size());
+                    //System.out.println(trees.size());
                     // Get all the chains
                     List<Chain> global_chains = new ArrayList<>();
                     for (Tree t : trees) {
@@ -287,7 +297,7 @@ class writeFileRunnable implements Runnable {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                System.out.println("Write person thread Ended");
+                //System.out.println("Write person thread Ended");
             }
         }
     }
