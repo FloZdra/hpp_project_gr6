@@ -12,6 +12,7 @@ public class Tree {
     public Tree(Person root) {
         this.root = root;
         this.root.setWeight(10);
+        this.root.setTree_in(this);
         chains = new ArrayList<>();
         chains.add(new Chain(root, root));
     }
@@ -21,6 +22,24 @@ public class Tree {
         return "Tree{" +
                 "chains=" + chains +
                 '}';
+    }
+
+    public void addPersonWithHashMap(Person new_person, Person contaminated_by) {
+
+        contaminated_by.addInfected(new_person);
+        new_person.setContaminated_by(contaminated_by);
+        new_person.setWeight(contaminated_by.getWeight() + 10);
+        new_person.setTree_in(this);
+
+        if (contaminated_by.getInfect().size() == 1) {
+            for (Chain c : chains) {
+                if (c.getEnd().equals(contaminated_by)) {
+                    c.setWeight(new_person.getWeight());
+                }
+            }
+        } else {
+            chains.add(new Chain(root, new_person));
+        }
     }
 
     public boolean addPerson(Person new_person, Person current_person) {

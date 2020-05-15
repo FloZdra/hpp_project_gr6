@@ -1,7 +1,6 @@
 package dto;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -13,6 +12,7 @@ public class Person implements Comparable<Person>, Cloneable {
     private int weight;
     private Person contaminated_by;
     private List<Person> infect;
+    private Tree tree_in;
 
     public Person(String country, int id, int diagnosed_ts, int contaminated_by_id) {
         this.country = country;
@@ -138,5 +138,13 @@ public class Person implements Comparable<Person>, Cloneable {
 
     public void setInfect(List<Person> infect) {
         this.infect = infect;
+    }
+
+    public Tree getTree_in() {
+        return tree_in;
+    }
+
+    public void setTree_in(Tree tree_in) {
+        this.tree_in = tree_in;
     }
 }

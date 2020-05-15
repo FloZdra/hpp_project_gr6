@@ -1,6 +1,7 @@
 package covidTracer;
 
 import dto.Chain;
+import dto.PeopleHashMap;
 import dto.Person;
 import dto.Tree;
 import org.apache.commons.io.IOUtils;
@@ -118,22 +119,34 @@ public class CovidTracer {
                     iterator.remove();
             }
 
+            // Add person to HashMap
+            PeopleHashMap.addPersonToMap(new_person);
+
             // If the person is contaminated by someone unknown
             if (new_person.getContaminated_by_id() == -1) {
                 trees.add(new Tree(new_person));
             } else {
+
                 // If we found the person who contaminated the new person
-                boolean added = false;
-                for (Tree t : trees) {
-                    if (t.addPerson(new_person, null)) {
-                        added = true;
-                        break;
-                    }
-                }
-                // If we didn't find him, we create a new tree where the person will be the root
-                if (!added) {
+                Person contaminated_by = PeopleHashMap.getPersonWithId(new_person.getContaminated_by_id());
+                if (contaminated_by == null || contaminated_by.getWeight() == 0) {
                     trees.add(new Tree(new_person));
+                } else {
+                    // Get the tree where tu put the new_person
+                    contaminated_by.getTree_in().addPersonWithHashMap(new_person, contaminated_by);
                 }
+
+//                boolean added = false;
+//                for (Tree t : trees) {
+//                    if (t.addPerson(new_person, null)) {
+//                        added = true;
+//                        break;
+//                    }
+//                }
+//                // If we didn't find him, we create a new tree where the person will be the root
+//                if (!added) {
+//                    trees.add(new Tree(new_person));
+//                   }
             }
 
             // Get all the chains
@@ -149,8 +162,9 @@ public class CovidTracer {
             for (int i = 0; i < 3 && i < global_chains.size(); i++)
                 sb.append(global_chains.get(i).toString());
 
-            writer.write(sb.toString().trim() + "\n"); // Remove trim() for comparing with Arnette's results
+            writer.write(sb.toString() + "\n"); // Remove trim() for comparing with Arnette's results
         }
+
     }
 
     public void copyFiles() {
