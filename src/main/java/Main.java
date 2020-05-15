@@ -1,15 +1,3 @@
-import dto.Chain;
-import dto.Person;
-import dto.Tree;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.*;
-
-import utils.FileReader;
-import utils.Parser;
-
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
