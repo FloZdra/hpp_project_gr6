@@ -4,7 +4,7 @@ import java.util.ArrayList;
 public class Main {
     private static final ArrayList<URL> urls = new ArrayList<>();
 
-    private static final String size = "20";
+    private static final String size = "5000";
 
     private static final URL france = Main.class.getResource("/data/" + size + "/France.csv");
     private static final URL italy = Main.class.getResource("/data/" + size + "/Italy.csv");
