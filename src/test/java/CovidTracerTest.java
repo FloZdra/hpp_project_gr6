@@ -145,4 +145,16 @@ class CovidTracerTest {
 
         covidTracerTest(output_test);
     }
+
+    @Test
+    @Order(10)
+    @DisplayName("Test 10")
+    void covidTracerTest10() {
+
+        urls.add(getClass().getResource("input_test/test10/France.csv"));
+
+        URL output_test = getClass().getResource("output_test/test10.csv");
+
+        covidTracerTest(output_test);
+    }
 }
