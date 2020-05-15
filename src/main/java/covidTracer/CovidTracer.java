@@ -76,8 +76,7 @@ public class CovidTracer {
                 // Add person to tree
                 initialList.add(read_person);
             } else {
-                fileReader.closeFile(); // TODO mark file as ended if it is not necessary to continue reading
-                // But in our case, a new patient can be added even if the file was empty at start
+                fileReader.closeFile();
             }
         }
 
@@ -109,17 +108,14 @@ public class CovidTracer {
     }
 
     public void copyFiles() {
-
         // Copy generated output from target to src/main/resources
         try {
             InputStream inputStream = getClass().getResource("/output_generated/output.csv").openStream();
             FileOutputStream fileOS = new FileOutputStream("src/main/resources/output_generated/output.csv");
             int i = IOUtils.copy(inputStream, fileOS);
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 }
 
