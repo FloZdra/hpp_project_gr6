@@ -9,10 +9,8 @@ import utils.Parser;
 
 import java.io.*;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class CovidTracer {
 
@@ -71,20 +69,17 @@ public class CovidTracer {
                 // Add person to tree
                 initialList.add(read_person);
             } else {
-                fileReader.closeFile(); // TODO mark file as ended
+                fileReader.closeFile(); // TODO mark file as ended if it is not necessary to continue reading
+                // But in our case, a new patient can be added even if the file was empty at start
             }
         }
 
         boolean end;
         do {
-
             // Find the file with the oldest person
-            Person next_person = initialList.get(0);
-            for (Person person : initialList) {
-                if (person.getDiagnosed_ts() < next_person.getDiagnosed_ts()) {
-                    next_person = person;
-                }
-            }
+            Person next_person = initialList.stream()
+                    .sorted(Comparator.comparing(Person::getDiagnosed_ts))
+                    .collect(Collectors.toList()).get(0);
 
             // Add the new person into the memory, and start the process
             addNewPerson(next_person.clone());
@@ -166,6 +161,6 @@ public class CovidTracer {
         }
 
     }
-
 }
+
 
