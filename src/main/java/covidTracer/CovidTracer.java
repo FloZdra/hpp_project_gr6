@@ -1,3 +1,5 @@
+package covidTracer;
+
 import dto.Chain;
 import dto.Person;
 import dto.Tree;
@@ -31,7 +33,7 @@ public class CovidTracer {
 
         // Open the file we will enter results in
         try {
-            writer = new PrintWriter(new File("target/classes/output_generated/output.csv"));
+            writer = new PrintWriter(new File(getClass().getResource("/output_generated/output.csv").getPath()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -155,7 +157,7 @@ public class CovidTracer {
 
         // Copy generated output from target to src/main/resources
         try {
-            InputStream inputStream = getClass().getResource("output_generated/output.csv").openStream();
+            InputStream inputStream = getClass().getResource("/output_generated/output.csv").openStream();
             FileOutputStream fileOS = new FileOutputStream("src/main/resources/output_generated/output.csv");
             int i = IOUtils.copy(inputStream, fileOS);
 
