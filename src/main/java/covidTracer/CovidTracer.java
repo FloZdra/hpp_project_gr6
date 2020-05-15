@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 public class CovidTracer {
     static boolean readThreadAlive = true;
     static boolean addThreadAlive = true;
-    static boolean writeThreadAlive = true;
 
     static Thread readThread;
     static Thread addThread;
@@ -27,10 +26,6 @@ public class CovidTracer {
 
     List<URL> url_files;
     PrintWriter writer = null;
-    List<Tree> trees = new ArrayList<>();
-
-    private Thread addNewPersonThread;
-    private Thread writeFileThread;
 
     public CovidTracer(List<URL> urls) {
         url_files = urls;
@@ -86,9 +81,9 @@ public class CovidTracer {
             }
         }
 
-        BlockingQueue<Person> blockingQueueRead = new LinkedBlockingDeque<>(10);
-        BlockingQueue<ArrayList<Tree>> blockingQueueWrite = new LinkedBlockingDeque<>(10);
-        ExecutorService executor = Executors.newFixedThreadPool(3);
+        BlockingQueue<Person> blockingQueueRead = new LinkedBlockingDeque<>(100);
+        BlockingQueue<String> blockingQueueWrite = new LinkedBlockingDeque<>(100);
+        //ExecutorService executor = Executors.newFixedThreadPool(3);
 
         // TODO optimize parameters (not necessary to be global)
         readNewPersonRunnable readNewPersonRunnable = new readNewPersonRunnable(blockingQueueRead, initialList, fileReaders, parser);
@@ -99,13 +94,8 @@ public class CovidTracer {
         addThread = new Thread(addNewPersonRunnable);
         writeThread = new Thread(writeFileRunnable);
 
-        //readThreadAlive = readThread.isAlive();
-        //addThreadAlive = addThread.isAlive();
-        //writeThreadAlive = writeThread.isAlive();
+        addThread.setPriority(10);
 
-        //executor.execute(readNewPersonRunnable);
-        //executor.execute(addNewPersonRunnable);
-        //executor.execute(writeFileRunnable);
         readThread.start();
         addThread.start();
         writeThread.start();
@@ -151,18 +141,19 @@ class readNewPersonRunnable implements Runnable {
     }
 
     public void readNewPerson() {
-        boolean end = false;
+        boolean end;
         do {
-            //System.out.println("Read new person started");
+            // System.out.println("Read new person started");
             // Add a new person to the queue
             try {
                 // Find the file with the oldest person
                 Person next_person = initialList.stream()
                         .sorted(Comparator.comparing(Person::getDiagnosed_ts))
                         .collect(Collectors.toList()).get(0);
-                blockingQueueRead.put(next_person.clone());
-                int index_next_person = initialList.indexOf(next_person);
 
+                blockingQueueRead.put(next_person.clone());
+
+                int index_next_person = initialList.indexOf(next_person);
                 String read_string = fileReaders.get(index_next_person).readLine();
 
                 if (!read_string.equals("")) {
@@ -171,14 +162,13 @@ class readNewPersonRunnable implements Runnable {
                     fileReaders.remove(fileReaders.get(initialList.indexOf(next_person)));
                     initialList.remove(next_person);
                 }
-
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             end = fileReaders.isEmpty();
+
             //System.out.println("Read new person ended");
             //System.out.println("Blocking queue read contains : " + blockingQueueRead.size());
-
         }
         while (!end);
         //System.out.println("Read has terminated");
@@ -187,20 +177,11 @@ class readNewPersonRunnable implements Runnable {
 
 class addNewPersonRunnable implements Runnable {
     BlockingQueue<Person> blockingQueueRead;
-    BlockingQueue<ArrayList<Tree>> blockingQueueWrite;
+    BlockingQueue<String> blockingQueueWrite;
     List<Tree> trees;
     boolean readerIsAlive;
 
-    public static ArrayList<Tree> cloneTrees(List<Tree> list) {
-        ArrayList<Tree> clone = new ArrayList<Tree>(list.size());
-
-        for (Tree item : list) {
-            clone.add(item.clone());
-        }
-        return clone;
-    }
-
-    public addNewPersonRunnable(BlockingQueue<Person> blockingQueueRead, BlockingQueue<ArrayList<Tree>> blockingQueueWrite, boolean readerIsAlive) {
+    public addNewPersonRunnable(BlockingQueue<Person> blockingQueueRead, BlockingQueue<String> blockingQueueWrite, boolean readerIsAlive) {
         this.blockingQueueRead = blockingQueueRead;
         this.blockingQueueWrite = blockingQueueWrite;
         this.trees = new ArrayList<>();
@@ -214,39 +195,55 @@ class addNewPersonRunnable implements Runnable {
     public void addNewPerson() {
         while (CovidTracer.readThread.isAlive() || !blockingQueueRead.isEmpty()) {
             //System.out.println("Add New Person thread started");
-            try {
-                Person new_person = blockingQueueRead.take();
+            if(!blockingQueueRead.isEmpty()){
+                try {
+                    Person new_person = blockingQueueRead.take();
 
-                // Recalculate every score of every chain
-                ListIterator<Tree> iterator = trees.listIterator();
-                while (iterator.hasNext()) {
-                    Tree t = iterator.next();
-                    t.updateChains(new_person.getDiagnosed_ts());
-                    if (t.getRoot() == null)
-                        iterator.remove();
-                }
+                    // Recalculate every score of every chain
+                    ListIterator<Tree> iterator = trees.listIterator();
+                    while (iterator.hasNext()) {
+                        Tree t = iterator.next();
+                        t.updateChains(new_person.getDiagnosed_ts());
+                        if (t.getRoot() == null)
+                            iterator.remove();
+                    }
 
-                // If the person is contaminated by someone unknown
-                if (new_person.getContaminated_by_id() == -1) {
-                    trees.add(new Tree(new_person));
-                } else {
-                    // If we found the person who contaminated the new person
-                    boolean added = false;
-                    for (Tree t : trees) {
-                        if (t.addPerson(new_person, null)) {
-                            added = true;
-                            break;
+                    // If the person is contaminated by someone unknown
+                    if (new_person.getContaminated_by_id() == -1) {
+                        trees.add(new Tree(new_person));
+                    } else {
+                        // If we found the person who contaminated the new person
+                        boolean added = false;
+                        for (Tree t : trees) {
+                            if (t.addPerson(new_person, null)) {
+                                added = true;
+                                break;
+                            }
+                        }
+                        // If we didn't find him, we create a new tree where the person will be the root
+                        if (!added) {
+                            trees.add(new Tree(new_person));
                         }
                     }
-                    // If we didn't find him, we create a new tree where the person will be the root
-                    if (!added) {
-                        trees.add(new Tree(new_person));
-                    }
-                }
-                blockingQueueWrite.put(cloneTrees(trees));
 
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                    // Get all the chains
+                    List<Chain> global_chains = new ArrayList<>();
+                    for (Tree t : trees) {
+                        global_chains.addAll(t.getChains());
+                    }
+
+                    global_chains.sort(Collections.reverseOrder());
+
+                    StringBuilder sb = new StringBuilder();
+
+                    for (int i = 0; i < 3 && i < global_chains.size(); i++)
+                        sb.append(global_chains.get(i).toString());
+
+                    blockingQueueWrite.put(sb.toString());
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
             //System.out.println("Add New Person thread Ended");
             //System.out.println("Blocking queue write contains : " + blockingQueueWrite.size());
@@ -256,12 +253,11 @@ class addNewPersonRunnable implements Runnable {
 
 class writeFileRunnable implements Runnable {
     PrintWriter writer;
-    BlockingQueue<ArrayList<Tree>> blockingQueueWrite;
+    BlockingQueue<String> blockingQueueWrite;
 
-    List<Tree> trees;
     boolean adderIsAlive;
 
-    public writeFileRunnable(PrintWriter printWriter, BlockingQueue<ArrayList<Tree>> blockingQueueWrite, boolean adderIsAlive) {
+    public writeFileRunnable(PrintWriter printWriter, BlockingQueue<String> blockingQueueWrite, boolean adderIsAlive) {
         this.blockingQueueWrite = blockingQueueWrite;
         this.writer = printWriter;
         this.adderIsAlive = adderIsAlive;
@@ -274,31 +270,15 @@ class writeFileRunnable implements Runnable {
     public void writePersonToFile() {
         while (CovidTracer.addThread.isAlive() || !blockingQueueWrite.isEmpty()) {
             //System.out.println("Write person threat started");
-            if (writer != null) {
+            if (!blockingQueueWrite.isEmpty()) {
                 try {
-                    trees = blockingQueueWrite.take();
-                    //System.out.println(trees.size());
-                    // Get all the chains
-                    List<Chain> global_chains = new ArrayList<>();
-                    for (Tree t : trees) {
-                        global_chains.addAll(t.getChains());
-                    }
-
-                    //TODO ADD TO THREAD
-                    global_chains.sort(Collections.reverseOrder());
-
-                    StringBuilder sb = new StringBuilder();
-
-                    for (int i = 0; i < 3 && i < global_chains.size(); i++)
-                        sb.append(global_chains.get(i).toString());
-
-                    writer.write(sb.toString().trim() + "\n"); // Remove trim() for comparing with Arnette's results
-
+                    String sb = blockingQueueWrite.take();
+                    writer.write(sb.trim() + "\n"); // Remove trim() for comparing with Arnette's results
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                //System.out.println("Write person thread Ended");
             }
+            //System.out.println("Write person thread Ended");
         }
     }
 }

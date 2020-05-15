@@ -61,7 +61,4 @@ public class Chain implements Comparable<Chain> {
         this.weight = weight;
     }
 
-    public Chain clone() {
-        return new Chain(root.clone(), end.clone());
-    }
 }

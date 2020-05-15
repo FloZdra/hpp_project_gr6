@@ -50,11 +50,7 @@ public class Person implements Comparable<Person> {
     // Generated functions
 
     public Person clone() {
-        Person clone = new Person(this.country, this.id, this.diagnosed_ts, this.contaminated_by_id);
-        for (Person i : this.infect) {
-            clone.addInfected(i.clone());
-        }
-        return clone;
+        return new Person(this.country, this.id, this.diagnosed_ts, this.contaminated_by_id);
     }
 
     @Override

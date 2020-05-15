@@ -1,9 +1,5 @@
-import dto.Person;
-import dto.Tree;
-
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Main {
     private static final ArrayList<URL> urls = new ArrayList<>();
@@ -28,6 +24,5 @@ public class Main {
         covidTracer.CovidTracer covidTracer = new covidTracer.CovidTracer(urls);
         covidTracer.launchAnalysis();
         System.out.println("Successful analysis");
-
     }
 }

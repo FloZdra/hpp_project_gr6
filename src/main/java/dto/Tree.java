@@ -16,9 +16,6 @@ public class Tree {
         chains.add(new Chain(root, root));
     }
 
-    public Tree() {
-    }
-
     @Override
     public String toString() {
         return "Tree{" +
@@ -91,16 +88,6 @@ public class Tree {
     }
 
     // Generated method
-
-    public Tree clone() {
-        Tree clone = new Tree();
-        clone.setRoot(root.clone());
-        clone.chains = new ArrayList<>();
-        for (Chain c : chains) {
-            clone.chains.add(c.clone());
-        }
-        return clone;
-    }
 
     public Person getRoot() {
         return root;
