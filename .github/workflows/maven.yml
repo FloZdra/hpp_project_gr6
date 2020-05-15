@@ -47,8 +47,14 @@ jobs:
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           ${{ runner.os }}-maven-
+    
     - name: Run the Maven test phase
       run: mvn -B test --file pom.xml
+    
+    - name: Codecov
+      uses: codecov/codecov-action@v1.0.7
+      with:
+        token: c4542562-73a9-4ac8-9157-30db4b285aa4 # not required for public repos
       
   package:
     name: Package
