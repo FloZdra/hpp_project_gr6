@@ -11,7 +11,6 @@ import utils.Parser;
 import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -135,36 +134,42 @@ public class CovidTracer {
                     // Get the tree where tu put the new_person
                     contaminated_by.getTree_in().addPersonWithHashMap(new_person, contaminated_by);
                 }
-
-//                boolean added = false;
-//                for (Tree t : trees) {
-//                    if (t.addPerson(new_person, null)) {
-//                        added = true;
-//                        break;
-//                    }
-//                }
-//                // If we didn't find him, we create a new tree where the person will be the root
-//                if (!added) {
-//                    trees.add(new Tree(new_person));
-//                   }
             }
 
-            // Get all the chains
-            List<Chain> global_chains = new ArrayList<>();
+            // Get 3 top chains
+            Chain top_1_chain = null;
+            Chain top_2_chain = null;
+            Chain top_3_chain = null;
+
             for (Tree t : trees) {
-                global_chains.addAll(t.getChains());
+                for (Chain c : t.getChains()) {
+                    if (top_1_chain == null || c.compareTo(top_1_chain) > 0) {
+                        top_3_chain = top_2_chain;
+                        top_2_chain = top_1_chain;
+                        top_1_chain = c;
+                    } else if (top_2_chain == null || c.compareTo(top_2_chain) > 0) {
+                        top_3_chain = top_2_chain;
+                        top_2_chain = c;
+                    } else if (top_3_chain == null || c.compareTo(top_3_chain) > 0) {
+                        top_3_chain = c;
+                    }
+                }
             }
-
-            global_chains.sort(Collections.reverseOrder());
-
             StringBuilder sb = new StringBuilder();
 
-            for (int i = 0; i < 3 && i < global_chains.size(); i++)
-                sb.append(global_chains.get(i).toString());
+            if (top_1_chain != null)
+                sb.append(top_1_chain.toString());
+            if (top_2_chain != null)
+                sb.append(top_2_chain.toString());
+            if (top_3_chain != null)
+                sb.append(top_3_chain.toString());
+
+            sb.deleteCharAt(sb.length() - 1);
+
+            // Write results in file
 
             writer.write(sb.toString() + "\n"); // Remove trim() for comparing with Arnette's results
         }
-
     }
 
     public void copyFiles() {

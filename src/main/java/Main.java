@@ -1,6 +1,3 @@
-import dto.PeopleHashMap;
-import dto.Person;
-
 import java.net.URL;
 import java.util.ArrayList;
 

@@ -42,37 +42,6 @@ public class Tree {
         }
     }
 
-    public boolean addPerson(Person new_person, Person current_person) {
-        if (current_person == null) current_person = this.root;
-
-        if (new_person.getContaminated_by_id() == current_person.getId()) {
-            if (current_person.getWeight() == 0)
-                return false;
-            current_person.addInfected(new_person);
-            new_person.setContaminated_by(current_person);
-            new_person.setWeight(current_person.getWeight() + 10);
-
-            if (current_person.getInfect().size() == 1) {
-
-                for (Chain c : chains) {
-                    if (c.getEnd().equals(current_person)) {
-                        c.setWeight(new_person.getWeight());
-                    }
-                }
-            } else {
-                chains.add(new Chain(root, new_person));
-            }
-            return true;
-        } else {
-            for (Person p : current_person.getInfect()) {
-                if (addPerson(new_person, p)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-
     public void updateChains(int actual_ts) {
         chains.clear();
         this.root.update(actual_ts, 0, root, chains);
