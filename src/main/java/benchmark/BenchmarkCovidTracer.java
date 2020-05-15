@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 public class BenchmarkCovidTracer {
     private final ArrayList<URL> urls = new ArrayList<>();
 
-    @Param({"20", "5000"})    //@Param({"20", "5000", "1000000"})
+    @Param({"20", "5000"})//@Param({"20", "5000", "1000000"})
     private String size;
 
     @Setup
