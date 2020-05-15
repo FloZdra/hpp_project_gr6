@@ -19,6 +19,7 @@ public class CovidTracer {
     List<Tree> trees = new ArrayList<>();
 
     private Thread addNewPersonThread;
+    private Thread writeFileThread;
 
     public CovidTracer(List<URL> urls) {
         url_files = urls;
@@ -92,11 +93,24 @@ public class CovidTracer {
             }
 
             // Add the new person into the memory, and start the process
-            addNewPersonRunnable myRunnable = new addNewPersonRunnable(next_person.clone(), writer, trees);
+            addNewPersonRunnable myRunnable = new addNewPersonRunnable(next_person.clone(), trees);
             addNewPersonThread = new Thread(myRunnable);
             addNewPersonThread.start();
-
             // addNewPerson(next_person.clone());
+
+
+            // Write to file
+            // Wait writeFileThread to finish
+            if (writeFileThread != null) {
+                try {
+                    writeFileThread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            writeFileRunnable writeFileRunnable = new writeFileRunnable(writer, new ArrayList<>(trees));
+            writeFileThread = new Thread(writeFileRunnable);
+            writeFileThread.start();
 
             int index_next_person = initialList.indexOf(next_person);
 
@@ -111,9 +125,8 @@ public class CovidTracer {
 
             end = fileReaders.isEmpty();
         }
-        while (!end);
+        while (!end && !addNewPersonThread.isAlive() && !writeFileThread.isAlive());
     }
-
 
     public void copyFiles() {
 
@@ -133,12 +146,10 @@ public class CovidTracer {
 class addNewPersonRunnable implements Runnable {
 
     Person next_person;
-    PrintWriter writer;
     List<Tree> trees;
 
-    public addNewPersonRunnable(Person next_person, PrintWriter printWriter, List<Tree> trees) {
+    public addNewPersonRunnable(Person next_person, List<Tree> trees) {
         this.next_person = next_person;
-        this.writer = printWriter;
         this.trees = trees;
     }
 
@@ -147,35 +158,54 @@ class addNewPersonRunnable implements Runnable {
     }
 
     public void addNewPerson(Person new_person) {
-        if (writer != null) {
+        System.out.println("addNewPerson thread started");
+        // Recalculate every score of every chain
+        ListIterator<Tree> iterator = trees.listIterator();
+        while (iterator.hasNext()) {
+            Tree t = iterator.next();
+            t.updateChains(new_person.getDiagnosed_ts());
+            if (t.getRoot() == null)
+                iterator.remove();
+        }
 
-            // Recalculate every score of every chain
-            ListIterator<Tree> iterator = trees.listIterator();
-            while (iterator.hasNext()) {
-                Tree t = iterator.next();
-                t.updateChains(new_person.getDiagnosed_ts());
-                if (t.getRoot() == null)
-                    iterator.remove();
+        // If the person is contaminated by someone unknown
+        if (new_person.getContaminated_by_id() == -1) {
+            trees.add(new Tree(new_person));
+        } else {
+            // If we found the person who contaminated the new person
+            boolean added = false;
+            for (Tree t : trees) {
+                if (t.addPerson(new_person, null)) {
+                    added = true;
+                    break;
+                }
             }
-
-            // If the person is contaminated by someone unknown
-            if (new_person.getContaminated_by_id() == -1) {
+            // If we didn't find him, we create a new tree where the person will be the root
+            if (!added) {
                 trees.add(new Tree(new_person));
-            } else {
-                // If we found the person who contaminated the new person
-                boolean added = false;
-                for (Tree t : trees) {
-                    if (t.addPerson(new_person, null)) {
-                        added = true;
-                        break;
-                    }
-                }
-                // If we didn't find him, we create a new tree where the person will be the root
-                if (!added) {
-                    trees.add(new Tree(new_person));
-                }
             }
+        }
+        System.out.println("addNewPerson thread Ended");
+    }
+}
 
+class writeFileRunnable implements Runnable {
+
+    PrintWriter writer;
+    List<Tree> trees;
+
+    public writeFileRunnable(PrintWriter printWriter, List<Tree> trees) {
+        this.trees = trees;
+        this.writer = printWriter;
+    }
+
+    public void run() {
+        writePersonToFile();
+    }
+
+    public void writePersonToFile() {
+        System.out.println("Write person threat started");
+        if (writer != null) {
             // Get all the chains
             List<Chain> global_chains = new ArrayList<>();
             for (Tree t : trees) {
@@ -192,6 +222,7 @@ class addNewPersonRunnable implements Runnable {
 
             writer.write(sb.toString().trim() + "\n"); // Remove trim() for comparing with Arnette's results
         }
+        System.out.println("Write person threat Ended");
     }
 
 }
