@@ -16,9 +16,9 @@ public class CovidTracer {
 
     List<URL> url_files;
     PrintWriter writer = null;
-
     List<Tree> trees = new ArrayList<>();
-    List<Chain> global_chains = new ArrayList<>();
+
+    private Thread addNewPersonThread;
 
     public CovidTracer(List<URL> urls) {
         url_files = urls;
@@ -76,13 +76,27 @@ public class CovidTracer {
 
         boolean end;
         do {
+
             // Find the file with the oldest person
             Person next_person = initialList.stream()
                     .sorted(Comparator.comparing(Person::getDiagnosed_ts))
                     .collect(Collectors.toList()).get(0);
 
+            // Wait addNewPersonThread to finish
+            if (addNewPersonThread != null) {
+                try {
+                    addNewPersonThread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
             // Add the new person into the memory, and start the process
-            addNewPerson(next_person.clone());
+            addNewPersonRunnable myRunnable = new addNewPersonRunnable(next_person.clone(), writer, trees);
+            addNewPersonThread = new Thread(myRunnable);
+            addNewPersonThread.start();
+
+            // addNewPerson(next_person.clone());
 
             int index_next_person = initialList.indexOf(next_person);
 
@@ -100,8 +114,39 @@ public class CovidTracer {
         while (!end);
     }
 
-    public void addNewPerson(Person new_person) {
 
+    public void copyFiles() {
+
+        // Copy generated output from target to src/main/resources
+        try {
+            InputStream inputStream = getClass().getResource("/output_generated/output.csv").openStream();
+            FileOutputStream fileOS = new FileOutputStream("src/main/resources/output_generated/output.csv");
+            int i = IOUtils.copy(inputStream, fileOS);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+}
+
+class addNewPersonRunnable implements Runnable {
+
+    Person next_person;
+    PrintWriter writer;
+    List<Tree> trees;
+
+    public addNewPersonRunnable(Person next_person, PrintWriter printWriter, List<Tree> trees) {
+        this.next_person = next_person;
+        this.writer = printWriter;
+        this.trees = trees;
+    }
+
+    public void run() {
+        addNewPerson(next_person);
+    }
+
+    public void addNewPerson(Person new_person) {
         if (writer != null) {
 
             // Recalculate every score of every chain
@@ -137,6 +182,7 @@ public class CovidTracer {
                 global_chains.addAll(t.getChains());
             }
 
+            //TODO ADD TO THREAD
             global_chains.sort(Collections.reverseOrder());
 
             StringBuilder sb = new StringBuilder();
@@ -148,19 +194,5 @@ public class CovidTracer {
         }
     }
 
-    public void copyFiles() {
-
-        // Copy generated output from target to src/main/resources
-        try {
-            InputStream inputStream = getClass().getResource("/output_generated/output.csv").openStream();
-            FileOutputStream fileOS = new FileOutputStream("src/main/resources/output_generated/output.csv");
-            int i = IOUtils.copy(inputStream, fileOS);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
 }
-
 
