@@ -34,8 +34,18 @@ public class Person implements Comparable<Person>, Cloneable {
                 weight += 4;
             }
         }
+
+        // optimize
+//        if (weight == 0) {
+//            this.getTree_in().getWhere_update().remove(this);
+//            for (Person new_where_update : infect)
+//                this.getTree_in().getWhere_update().add(new_where_update);
+//        }
+
+
         if (this.infect.isEmpty()) {
-            chains.add(new Chain(root, this));
+            if (weight != 0)
+                chains.add(new Chain(root, this));
         } else {
             for (Person p : infect) {
                 p.update(actual_ts, weight, root, chains);

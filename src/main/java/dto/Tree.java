@@ -8,6 +8,7 @@ public class Tree {
 
     private Person root;
     private List<Chain> chains;
+    private List<Person> where_update;
 
     public Tree(Person root) {
         this.root = root;
@@ -15,6 +16,8 @@ public class Tree {
         this.root.setTree_in(this);
         chains = new ArrayList<>();
         chains.add(new Chain(root, root));
+        where_update = new ArrayList<>();
+        where_update.add(root);
     }
 
     @Override
@@ -44,6 +47,14 @@ public class Tree {
 
     public void updateChains(int actual_ts) {
         chains.clear();
+
+//        // optimize
+//        List<Person> where_update_now = new ArrayList<>(where_update);
+//        for (Person p : where_update_now) {
+//            p.update(actual_ts, 0, root, chains);
+//        }
+
+
         this.root.update(actual_ts, 0, root, chains);
 
         ListIterator<Chain> iterator = chains.listIterator();
@@ -52,6 +63,7 @@ public class Tree {
             if (c.getEnd().getWeight() == 0) {
                 deleteChain(c.getEnd());
                 iterator.remove();
+                System.out.println("Remove chain");
             }
         }
     }
@@ -84,4 +96,13 @@ public class Tree {
     public void setRoot(Person root) {
         this.root = root;
     }
+
+    public List<Person> getWhere_update() {
+        return where_update;
+    }
+
+    public void setWhere_update(List<Person> where_update) {
+        this.where_update = where_update;
+    }
+
 }

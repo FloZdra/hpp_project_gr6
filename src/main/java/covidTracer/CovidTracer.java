@@ -10,9 +10,7 @@ import utils.Parser;
 
 import java.io.*;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 public class CovidTracer {
 
@@ -75,8 +73,16 @@ public class CovidTracer {
             }
         }
 
+        List<Long> find_person = new ArrayList<>();
+        List<Long> add_person = new ArrayList<>();
+        List<Long> find_next_person = new ArrayList<>();
+        long begin;
+
         boolean end;
         do {
+
+
+            begin = System.nanoTime();
 
             // Find the file with the oldest person
             Person next_person = initialList.get(0);
@@ -86,12 +92,22 @@ public class CovidTracer {
                 }
             }
 
+            find_person.add(System.nanoTime() - begin);
+            begin = System.nanoTime();
+
+
             // Add the new person into the memory, and start the process
             addNewPerson(next_person.clone());
+
+
+            add_person.add(System.nanoTime() - begin);
+            begin = System.nanoTime();
 
             int index_next_person = initialList.indexOf(next_person);
 
             String read_string = fileReaders.get(index_next_person).readLine();
+
+            find_next_person.add(System.nanoTime() - begin);
 
             if (!read_string.equals("")) {
                 initialList.set(index_next_person, parser.parseLine(fileReaders.get(index_next_person).getCountry(), read_string));
@@ -101,13 +117,32 @@ public class CovidTracer {
             }
 
             end = fileReaders.isEmpty();
+
         }
         while (!end);
+
+        OptionalDouble avg_find_person = find_person.stream().mapToDouble(x -> x).average();
+        OptionalDouble avg_add_person = add_person.stream().mapToDouble(x -> x).average();
+        OptionalDouble avg_find_next_person = find_next_person.stream().mapToDouble(x -> x).average();
+
+//        System.out.println("Average find person : " + avg_find_person.toString());
+//        System.out.println("Average add person : " + avg_add_person.toString());
+//        System.out.println("Average find next person : " + avg_find_next_person.toString());
+
+
     }
 
     public void addNewPerson(Person new_person) {
 
         if (writer != null) {
+
+            long update_time;
+            long add_person_to_hashmap;
+            long add_person_to_tree;
+            long get_chains;
+            long writing;
+
+            update_time = System.nanoTime();
 
             // Recalculate every score of every chain
             ListIterator<Tree> iterator = trees.listIterator();
@@ -118,8 +153,12 @@ public class CovidTracer {
                     iterator.remove();
             }
 
+            add_person_to_hashmap = System.nanoTime();
+
             // Add person to HashMap
             PeopleHashMap.addPersonToMap(new_person);
+
+            add_person_to_tree = System.nanoTime();
 
             // If the person is contaminated by someone unknown
             if (new_person.getContaminated_by_id() == -1) {
@@ -136,7 +175,8 @@ public class CovidTracer {
                 }
             }
 
-            // Get 3 top chains
+            get_chains = System.nanoTime();
+
             Chain top_1_chain = null;
             Chain top_2_chain = null;
             Chain top_3_chain = null;
@@ -164,12 +204,42 @@ public class CovidTracer {
             if (top_3_chain != null)
                 sb.append(top_3_chain.toString());
 
-            sb.deleteCharAt(sb.length() - 1);
+            sb.deleteCharAt(sb.length() - 1); // Remove this line for comparing with Arnette's results
 
-            // Write results in file
+//            // Get all the chains
+//            List<Chain> global_chains = new ArrayList<>();
+//            for (Tree t : trees) {
+//                global_chains.addAll(t.getChains());
+//            }
+//
+//            global_chains.sort(Collections.reverseOrder());
+//
+//            StringBuilder sb = new StringBuilder();
+//
+//            for (int i = 0; i < 3 && i < global_chains.size(); i++)
+//                sb.append(global_chains.get(i).toString());
+
+            writing = System.nanoTime();
 
             writer.write(sb.toString() + "\n"); // Remove trim() for comparing with Arnette's results
+
+            long end = System.nanoTime();
+
+            update_time = add_person_to_hashmap - update_time;
+            add_person_to_hashmap = add_person_to_tree - add_person_to_hashmap;
+            add_person_to_tree = get_chains - add_person_to_tree;
+            get_chains = writing - get_chains;
+            writing = end - writing;
+
+            System.out.print("Update time : " + update_time + "\t\t");
+            System.out.print("Add person hashmap time : " + add_person_to_hashmap + "\t\t");
+            System.out.print("Add person tree time : " + add_person_to_tree + "\t\t");
+            System.out.print("Get chains time : " + get_chains + "\t\t");
+            System.out.print("Writing time : " + writing + "\n");
+
+
         }
+
     }
 
     public void copyFiles() {
