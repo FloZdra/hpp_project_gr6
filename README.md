@@ -110,7 +110,7 @@ Nous avons mis en place une pipeline qui vérifie qu'aucune régréssion n'a lie
 A chaque push sur dev ou master, on s'assure que :
 - Build : le projet se compile 
 - Test : les tests sont validés et une mesure de la couverture de code est réalisée
-- Compile : un jar est crée
+- Package : un jar est crée
 
 <!-- Optmisisations -->
 ## Optimisations apportées
