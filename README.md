@@ -28,7 +28,7 @@
   * [Installation](#installation)
 * [Benchmark](#benchmark)
 * [Tests](#tests)
-* [Optimisations](#optimisation)
+* [Optimisations apportées](#optimisations-apportées)
 
 <!-- ABOUT THE PROJECT -->
 ## A propos du projet
@@ -99,7 +99,7 @@ BenchmarkCovidTracer.benchmarkCovidTracer    5000  avgt   50  193,806 ± 6,008  
 ## Tests
 
 <!-- Optmisisations -->
-## Optmisisations
+## Optimisations apportées
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
