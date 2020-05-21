@@ -104,6 +104,14 @@ BenchmarkCovidTracer.benchmarkCovidTracer    5000  avgt   50  193,806 ± 6,008  
 <!-- Tests -->
 ## Tests
 
+<!-- Intégration continue -->
+### Intégration continue
+Nous avons mis en place une pipeline qui vérifie qu'aucune régréssion n'a lieu sur notre branche principale. Nous avons utilisé Github Actions avec Maven. https://github.com/kamilcglr/hpp_project_gr6/actions
+A chaque push sur dev ou master, on s'assure que :
+- Build : le projet se compile 
+- Test : les tests sont validés et une mesure de la couverture de code est réalisée
+- Package : un jar est crée
+
 <!-- Optmisisations -->
 ## Optimisations apportées
 
