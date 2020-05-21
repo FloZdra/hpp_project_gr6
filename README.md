@@ -29,6 +29,7 @@
   * [Installation](#installation)
 * [Benchmark](#benchmark)
 * [Tests](#tests)
+  * [Intégration continue](#intégration-continue)
 * [Optimisations apportées](#optimisations-apportées)
 
 <!-- ABOUT THE PROJECT -->
