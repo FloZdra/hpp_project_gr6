@@ -165,12 +165,18 @@ public class Tree {
                 Chain temp = top_chains[0];
                 top_chains[0] = top_chains[1];
                 top_chains[1] = temp;
-            }
-            if(top_chains[2] != null) {
+            } else if (top_chains[2] != null) {
                 if (top_chains[2].compareTo(top_chains[1]) > 0) {
-                    Chain temp = top_chains[1];
-                    top_chains[1] = top_chains[2];
-                    top_chains[2] = temp;
+                    if (top_chains[2].compareTo(top_chains[0]) > 0) {
+                        Chain temp = top_chains[0];
+                        top_chains[0] = top_chains[2];
+                        top_chains[2] = top_chains[1];
+                        top_chains[1] = temp;
+                    } else {
+                        Chain temp = top_chains[1];
+                        top_chains[1] = top_chains[2];
+                        top_chains[2] = temp;
+                    }
                 }
             }
         }
