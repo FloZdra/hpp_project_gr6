@@ -10,14 +10,25 @@ public class Tree {
     private List<Chain> chains;
     private List<Person> where_update;
 
+    private List<Person> peopleToAdd;
+
+    private int top_chain_weight;
+    private int potential_top_chain_weight;
+    private int last_update;
+
     public Tree(Person root) {
         this.root = root;
         this.root.setWeight(10);
         this.root.setTree_in(this);
+        this.root.setIn_the_tree(true);
         chains = new ArrayList<>();
         chains.add(new Chain(root, root));
         where_update = new ArrayList<>();
         where_update.add(root);
+        peopleToAdd = new ArrayList<>();
+        top_chain_weight = 10;
+        potential_top_chain_weight = 10;
+        last_update = root.getDiagnosed_ts();
     }
 
     @Override
@@ -27,17 +38,24 @@ public class Tree {
                 '}';
     }
 
-    public void addPersonWithHashMap(Person new_person, Person contaminated_by) {
+    public void addPersonToTree(Person new_person, Person contaminated_by) {
 
         contaminated_by.addInfected(new_person);
         new_person.setContaminated_by(contaminated_by);
         new_person.setWeight(contaminated_by.getWeight() + 10);
         new_person.setTree_in(this);
+        new_person.setIn_the_tree(true);
+
+        if (top_chain_weight < new_person.getWeight()) {
+            top_chain_weight = new_person.getWeight();
+            potential_top_chain_weight = new_person.getWeight();
+        }
 
         if (contaminated_by.getInfect().size() == 1) {
             for (Chain c : chains) {
                 if (c.getEnd().equals(contaminated_by)) {
                     c.setWeight(new_person.getWeight());
+                    c.setEnd(new_person);
                 }
             }
         } else {
@@ -45,27 +63,32 @@ public class Tree {
         }
     }
 
-    public void updateChains(int actual_ts) {
+    public void updateTree(int actual_ts) {
+
         chains.clear();
 
-//        // optimize
-//        List<Person> where_update_now = new ArrayList<>(where_update);
-//        for (Person p : where_update_now) {
-//            p.update(actual_ts, 0, root, chains);
-//        }
+        // Update only where it is needed
+        List<Person> where_update_now = new ArrayList<>(where_update);
+        where_update.clear();
+        for (Person p : where_update_now) {
+            p.update(actual_ts, 0, root, chains, true);
+        }
 
+        top_chain_weight = 0;
 
-        this.root.update(actual_ts, 0, root, chains);
-
+        // Remove chains with weight = 0 and get top chain weight
         ListIterator<Chain> iterator = chains.listIterator();
         while (iterator.hasNext()) {
             Chain c = iterator.next();
+            top_chain_weight = Integer.max(top_chain_weight, c.getWeight());
             if (c.getEnd().getWeight() == 0) {
                 deleteChain(c.getEnd());
                 iterator.remove();
-                System.out.println("Remove chain");
             }
         }
+
+        potential_top_chain_weight = top_chain_weight;
+        last_update = actual_ts;
     }
 
     // Recursive method (Bottom to top)
@@ -74,10 +97,41 @@ public class Tree {
             if (!p.equals(root)) {
                 p.getContaminated_by().getInfect().remove(p);
                 deleteChain(p.getContaminated_by());
-            } else
+            } else {
                 this.root = null;
+            }
         }
     }
+
+    public void deleteTree() {
+        for (Person p : where_update) {
+            for (Person infect : p.getInfect()) {
+                PeopleHashMap.removePersonFromMap(infect);
+            }
+            PeopleHashMap.removePersonFromMap(p);
+        }
+    }
+
+
+    public void addPersonToWaiting(Person p) {
+        p.setTree_in(this);
+        p.setIn_the_tree(false);
+
+        peopleToAdd.add(p);
+        potential_top_chain_weight += 10;
+        last_update = p.getDiagnosed_ts();
+    }
+
+    public int getWeightOfChainEndingWith(Person end) {
+        for (Chain c : chains) {
+            if (c.getEnd().equals(end)) {
+                return c.getWeight();
+            }
+        }
+        return 0;
+    }
+
+    // Generated method
 
     public List<Chain> getChains() {
         return chains;
@@ -86,8 +140,6 @@ public class Tree {
     public void setChains(List<Chain> chains) {
         this.chains = chains;
     }
-
-    // Generated method
 
     public Person getRoot() {
         return root;
@@ -105,4 +157,15 @@ public class Tree {
         this.where_update = where_update;
     }
 
+    public List<Person> getPeopleToAdd() {
+        return peopleToAdd;
+    }
+
+    public int getPotential_top_chain_weight() {
+        return potential_top_chain_weight;
+    }
+
+    public int getLast_update() {
+        return last_update;
+    }
 }
