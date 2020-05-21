@@ -5,6 +5,7 @@ import dto.PeopleHashMap;
 import dto.Person;
 import dto.Tree;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.math3.stat.regression.UpdatingMultipleLinearRegression;
 import utils.FileReader;
 import utils.Parser;
 
@@ -78,8 +79,13 @@ public class CovidTracer {
             }
         }
 
+        int i = 1;
         boolean end;
         do {
+
+            if (i % 5000 == 0)
+                System.out.println(i);
+            i++;
 
             // Find the file with the oldest person
             Person next_person = initialList.get(0);
@@ -130,6 +136,8 @@ public class CovidTracer {
                 min_top_chain = Integer.min(min_top_chain, t.getWeightOfChainEndingWith(top_3_chain.getEnd()));
             }
 
+            top_1_chain = top_2_chain = top_3_chain = null;
+
             // Update trees
             List<Tree> new_trees = new ArrayList<>();
             ListIterator<Tree> treeIterator = trees.listIterator();
@@ -163,6 +171,12 @@ public class CovidTracer {
 
                     if (t.getChains().isEmpty())
                         treeIterator.remove();
+
+                    // Update top chains
+                    Chain[] top_tree_chains = t.getTop_chains();
+                    updateTopChains(top_tree_chains[0]);
+                    updateTopChains(top_tree_chains[1]);
+                    updateTopChains(top_tree_chains[2]);
                 }
                 if (new_person.getDiagnosed_ts() - t.getLast_update() > 1209600) {
                     t.deleteTree();
@@ -174,9 +188,11 @@ public class CovidTracer {
             // Add person to HashMap
             PeopleHashMap.addPersonToMap(new_person);
 
+            Tree tree_modified = null;
             // If the person is contaminated by someone unknown
             if (new_person.getContaminated_by_id() == -1) {
-                trees.add(new Tree(new_person));
+                tree_modified = new Tree(new_person);
+                trees.add(tree_modified);
             } else {
 
                 // If we found the person who contaminated the new person
@@ -190,49 +206,56 @@ public class CovidTracer {
                 // we need to had the new_person in the waiting list
 
                 if (contaminated_by == null) {
-                    trees.add(new Tree(new_person));
+                    tree_modified = new Tree(new_person);
+                    trees.add(tree_modified);
                 } else if (contaminated_by.isIn_the_tree()) {
                     // If the tree has no potential to be in top 3, we put the new person in the waiting list,
                     // otherwise we add him in the tree
-                    Tree tree_to_add = contaminated_by.getTree_in();
-                    if (tree_to_add.getPotential_top_chain_weight() + 10 >= min_top_chain) {
-                        tree_to_add.addPersonToTree(new_person, contaminated_by);
+                    tree_modified = contaminated_by.getTree_in();
+                    if (tree_modified.getPotential_top_chain_weight() + 10 >= min_top_chain) {
+                        tree_modified.addPersonToTree(new_person, contaminated_by);
                     } else {
-                        tree_to_add.addPersonToWaiting(new_person);
+                        tree_modified.addPersonToWaiting(new_person);
                     }
                 } else if (!contaminated_by.isIn_the_tree()) {
-                    Tree tree_to_add = contaminated_by.getTree_in();
-                    tree_to_add.addPersonToWaiting(new_person);
+                    tree_modified = contaminated_by.getTree_in();
+                    tree_modified.addPersonToWaiting(new_person);
                 }
             }
 
-            top_1_chain = top_2_chain = top_3_chain = null;
-
-            for (Tree t : trees) {
-                if (t.getLast_update() == new_person.getDiagnosed_ts()) {
-                    Chain[] top_tree_chains = t.getTop_chains();
-                    updateTopChains(top_tree_chains[0]);
-                    updateTopChains(top_tree_chains[1]);
-                    updateTopChains(top_tree_chains[2]);
+            // Update top chains only with tree modified
+            if (tree_modified != null) {
+                Chain[] top_tree_chains = tree_modified.getTop_chains();
+                for (Chain c : top_tree_chains) {
+                    if (c != null) {
+                        if (!c.equals(top_1_chain) && !c.equals(top_2_chain) && !c.equals(top_3_chain))
+                            updateTopChains(c);
+                        else
+                            sortTopChains();
+                    }
                 }
+
+
+                StringBuilder sb = new StringBuilder();
+
+                if (top_1_chain != null)
+                    sb.append(top_1_chain.toString());
+                if (top_2_chain != null)
+                    sb.append(top_2_chain.toString());
+                if (top_3_chain != null)
+                    sb.append(top_3_chain.toString());
+
+                sb.deleteCharAt(sb.length() - 1); // Remove this line for comparing with Arnette's results
+
+                writer.write(sb.toString() + "\n"); // Remove trim() for comparing with Arnette's results
             }
-            StringBuilder sb = new StringBuilder();
 
-            if (top_1_chain != null)
-                sb.append(top_1_chain.toString());
-            if (top_2_chain != null)
-                sb.append(top_2_chain.toString());
-            if (top_3_chain != null)
-                sb.append(top_3_chain.toString());
-
-            sb.deleteCharAt(sb.length() - 1); // Remove this line for comparing with Arnette's results
-
-            writer.write(sb.toString() + "\n"); // Remove trim() for comparing with Arnette's results
         }
     }
 
     public void updateTopChains(Chain c) {
         if (c == null) return;
+        // If the chain is already in the list
         if (top_1_chain == null || c.compareTo(top_1_chain) > 0) {
             top_3_chain = top_2_chain;
             top_2_chain = top_1_chain;
@@ -244,6 +267,31 @@ public class CovidTracer {
             top_3_chain = c;
         }
     }
+
+
+    private void sortTopChains() {
+        if (top_2_chain != null) {
+            if (top_2_chain.compareTo(top_1_chain) > 0) {
+                Chain temp = top_1_chain;
+                top_1_chain = top_2_chain;
+                top_2_chain = temp;
+            } else if (top_3_chain != null) {
+                if (top_3_chain.compareTo(top_2_chain) > 0) {
+                    if (top_3_chain.compareTo(top_1_chain) > 0) {
+                        Chain temp = top_1_chain;
+                        top_1_chain = top_3_chain;
+                        top_3_chain = top_2_chain;
+                        top_2_chain = temp;
+                    } else {
+                        Chain temp = top_2_chain;
+                        top_2_chain = top_3_chain;
+                        top_3_chain = temp;
+                    }
+                }
+            }
+        }
+    }
+
 
     public void copyFiles() {
 
@@ -258,6 +306,5 @@ public class CovidTracer {
         }
 
     }
-
 }
 
