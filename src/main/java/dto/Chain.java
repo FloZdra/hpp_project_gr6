@@ -6,25 +6,17 @@ public class Chain implements Comparable<Chain> {
     private Person end;
     private int weight;
 
-    // TO DO
-
     public Chain(Person root, Person end) {
         this.root = root;
         this.end = end;
         this.weight = end.getWeight();
     }
 
-
     // Generated functions
 
     @Override
     public String toString() {
         return root.getCountry() + ", " + root.getId() + ", " + this.weight + "; ";
-//        return "Chain{" +
-//                "root=" + root.getId() +
-//                ", end=" + end.getId() +
-//                ", weight=" + weight +
-//                '}';
     }
 
     @Override

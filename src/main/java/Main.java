@@ -1,4 +1,5 @@
 import java.net.URL;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 
 public class Main {
@@ -20,9 +21,15 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println("Starting analysis");
+        long startTime = System.nanoTime();
         init();
         covidTracer.CovidTracer covidTracer = new covidTracer.CovidTracer(urls);
         covidTracer.launchAnalysis();
+        long endTime = System.nanoTime();
         System.out.println("Successful analysis");
+        long timeElapsed = endTime - startTime;
+
+        System.out.println("Execution time : " +
+                timeElapsed / 1000000 + " ms");
     }
 }

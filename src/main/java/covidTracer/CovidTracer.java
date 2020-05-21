@@ -1,6 +1,7 @@
 package covidTracer;
 
 import dto.Chain;
+import dto.PeopleHashMap;
 import dto.Person;
 import dto.Tree;
 import org.apache.commons.io.IOUtils;
@@ -26,6 +27,14 @@ public class CovidTracer {
 
     List<URL> url_files;
     PrintWriter writer = null;
+
+    List<Tree> trees = new ArrayList<>();
+
+    Chain top_1_chain = null;
+    Chain top_2_chain = null;
+    Chain top_3_chain = null;
+
+    int min_top_chain = 0;
 
     public CovidTracer(List<URL> urls) {
         url_files = urls;
@@ -195,46 +204,121 @@ class addNewPersonRunnable implements Runnable {
                 try {
                     Person new_person = blockingQueueRead.take();
 
-                    // Recalculate every score of every chain
-                    ListIterator<Tree> iterator = trees.listIterator();
-                    while (iterator.hasNext()) {
-                        Tree t = iterator.next();
-                        t.updateChains(new_person.getDiagnosed_ts());
-                        if (t.getRoot() == null)
-                            iterator.remove();
-                    }
+                    // Flo part
+ // Update Part
+            min_top_chain = 0;
+            if (top_1_chain != null) {
+                top_1_chain.getRoot().getTree_in().updateTree(new_person.getDiagnosed_ts());
+                Tree t = top_1_chain.getRoot().getTree_in();
+                min_top_chain = t.getWeightOfChainEndingWith(top_1_chain.getEnd());
+            }
+            if (top_2_chain != null) {
+                top_2_chain.getRoot().getTree_in().updateTree(new_person.getDiagnosed_ts());
+                Tree t = top_2_chain.getRoot().getTree_in();
+                min_top_chain = Integer.min(min_top_chain, t.getWeightOfChainEndingWith(top_2_chain.getEnd()));
+            }
+            if (top_3_chain != null) {
+                top_3_chain.getRoot().getTree_in().updateTree(new_person.getDiagnosed_ts());
+                Tree t = top_3_chain.getRoot().getTree_in();
+                min_top_chain = Integer.min(min_top_chain, t.getWeightOfChainEndingWith(top_3_chain.getEnd()));
+            }
 
-                    // If the person is contaminated by someone unknown
-                    if (new_person.getContaminated_by_id() == -1) {
-                        trees.add(new Tree(new_person));
-                    } else {
-                        // If we found the person who contaminated the new person
-                        boolean added = false;
-                        for (Tree t : trees) {
-                            if (t.addPerson(new_person, null)) {
-                                added = true;
-                                break;
+            // Update trees
+            List<Tree> new_trees = new ArrayList<>();
+            ListIterator<Tree> treeIterator = trees.listIterator();
+            while (treeIterator.hasNext()) {
+                Tree t = treeIterator.next();
+
+                // Only for trees which have a potential
+                if (t.getPotential_top_chain_weight() + 10 >= min_top_chain) {
+
+                    // Add every person in waiting list
+                    ListIterator<Person> personIterator = t.getWaitingList().listIterator();
+                    while (personIterator.hasNext()) {
+                        Person personToAdd = personIterator.next();
+                        Person contamined_by = PeopleHashMap.getPersonWithId(personToAdd.getContaminated_by_id());
+
+                        if (contamined_by == null) {
+                            new_trees.add(new Tree(personToAdd));
+                        } else {
+                            Tree tree_to_update = contamined_by.getTree_in();
+                            tree_to_update.updateTree(personToAdd.getDiagnosed_ts());
+
+                            if (contamined_by.getWeight() == 0) {
+                                new_trees.add(new Tree(personToAdd));
+                            } else {
+                                tree_to_update.addPersonToTree(personToAdd, contamined_by);
                             }
                         }
-                        // If we didn't find him, we create a new tree where the person will be the root
-                        if (!added) {
-                            trees.add(new Tree(new_person));
-                        }
+                        personIterator.remove();
                     }
+                    t.updateTree(new_person.getDiagnosed_ts());
 
-                    // Get all the chains
-                    List<Chain> global_chains = new ArrayList<>();
-                    for (Tree t : trees) {
-                        global_chains.addAll(t.getChains());
+                    if (t.getChains().isEmpty())
+                        treeIterator.remove();
+                }
+                if (new_person.getDiagnosed_ts() - t.getLast_update() > 1209600) {
+                    t.deleteTree();
+                    treeIterator.remove();
+                }
+            }
+            trees.addAll(new_trees);
+
+            // Add person to HashMap
+            PeopleHashMap.addPersonToMap(new_person);
+
+            // If the person is contaminated by someone unknown
+            if (new_person.getContaminated_by_id() == -1) {
+                trees.add(new Tree(new_person));
+            } else {
+
+                // If we found the person who contaminated the new person
+                Person contaminated_by = PeopleHashMap.getPersonWithId(new_person.getContaminated_by_id());
+
+                // We have 3 cases here :
+                // First, IF the contaminator does not exist : we create a tree
+                // ELSE, IF the person exist (so he has a weight != 0), then IF the tree has a potential to be in the top 3,
+                // we add him in the tree, OTHERWISE we had him iun the waiting list
+                // ELSE, IF the contaminator exist but he is not in a tree (so he is in a waiting list of a tree),
+                // we need to had the new_person in the waiting list
+
+                if (contaminated_by == null) {
+                    trees.add(new Tree(new_person));
+                } else if (contaminated_by.isIn_the_tree()) {
+                    // If the tree has no potential to be in top 3, we put the new person in the waiting list,
+                    // otherwise we add him in the tree
+                    Tree tree_to_add = contaminated_by.getTree_in();
+                    if (tree_to_add.getPotential_top_chain_weight() + 10 >= min_top_chain) {
+                        tree_to_add.addPersonToTree(new_person, contaminated_by);
+                    } else {
+                        tree_to_add.addPersonToWaiting(new_person);
                     }
+                } else if (!contaminated_by.isIn_the_tree()) {
+                    Tree tree_to_add = contaminated_by.getTree_in();
+                    tree_to_add.addPersonToWaiting(new_person);
+                }
+            }
 
-                    global_chains.sort(Collections.reverseOrder());
+            top_1_chain = top_2_chain = top_3_chain = null;
 
-                    StringBuilder sb = new StringBuilder();
+            for (Tree t : trees) {
+                if (t.getLast_update() == new_person.getDiagnosed_ts()) {
+                    Chain[] top_tree_chains = t.getTop_chains();
+                    updateTopChains(top_tree_chains[0]);
+                    updateTopChains(top_tree_chains[1]);
+                    updateTopChains(top_tree_chains[2]);
+                }
+            }
+            StringBuilder sb = new StringBuilder();
 
-                    for (int i = 0; i < 3 && i < global_chains.size(); i++)
-                        sb.append(global_chains.get(i).toString());
-
+            if (top_1_chain != null)
+                sb.append(top_1_chain.toString());
+            if (top_2_chain != null)
+                sb.append(top_2_chain.toString());
+            if (top_3_chain != null)
+                sb.append(top_3_chain.toString());
+                  
+                  
                     blockingQueueWrite.put(sb.toString());
 
                 } catch (InterruptedException e) {
@@ -243,6 +327,20 @@ class addNewPersonRunnable implements Runnable {
             }
             //System.out.println("Add New Person thread Ended");
             //System.out.println("Blocking queue write contains : " + blockingQueueWrite.size());
+        }
+    }
+
+    public void updateTopChains(Chain c) {
+        if (c == null) return;
+        if (top_1_chain == null || c.compareTo(top_1_chain) > 0) {
+            top_3_chain = top_2_chain;
+            top_2_chain = top_1_chain;
+            top_1_chain = c;
+        } else if (top_2_chain == null || c.compareTo(top_2_chain) > 0) {
+            top_3_chain = top_2_chain;
+            top_2_chain = c;
+        } else if (top_3_chain == null || c.compareTo(top_3_chain) > 0) {
+            top_3_chain = c;
         }
     }
 }

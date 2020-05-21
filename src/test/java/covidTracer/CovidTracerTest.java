@@ -25,8 +25,10 @@ class CovidTracerTest {
         fr_expected.openFile(output_test);
         fr_actual.openFile(getClass().getResource("/output_generated/output.csv"));
 
+        int line = 1;
         while (fr_expected.getSc().hasNextLine() || fr_actual.getSc().hasNextLine()) {
-            assertEquals(fr_expected.readLine(), fr_actual.readLine());
+            assertEquals(fr_expected.readLine(), fr_actual.readLine(), "Error line " + line);
+            line++;
         }
 
         fr_expected.closeFile();
@@ -156,6 +158,20 @@ class CovidTracerTest {
         urls.add(getClass().getResource("/input_test/test10/France.csv"));
 
         URL output_test = getClass().getResource("/output_test/test10.csv");
+
+        covidTracerTest(output_test);
+    }
+
+    @Test
+    @Order(11)
+    @DisplayName("Test 11")
+    void covidTracerTest11() {
+
+        urls.add(getClass().getResource("/input_test/test11/France.csv"));
+        urls.add(getClass().getResource("/input_test/test11/Italy.csv"));
+        urls.add(getClass().getResource("/input_test/test11/Spain.csv"));
+
+        URL output_test = getClass().getResource("/output_test/test11.csv");
 
         covidTracerTest(output_test);
     }
