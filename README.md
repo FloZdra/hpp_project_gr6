@@ -97,8 +97,8 @@ JMH a été configuré afin d'éxécuter 3 tours de chauffe (sans prise de mesur
 En sortie, vous aurez alors le temps moyen (score) pour chaque taille avec l'erreur (error) en millisecondes.
 ```sh
 Benchmark                                  (size)  Mode  Cnt    Score   Error  Units
-BenchmarkCovidTracer.benchmarkCovidTracer      20  avgt   50    0,312 ± 0,017  ms/op
-BenchmarkCovidTracer.benchmarkCovidTracer    5000  avgt   50  193,806 ± 6,008  ms/op
+BenchmarkCovidTracer.benchmarkCovidTracer      20  avgt   50    1,233 ± 0,022  ms/op
+BenchmarkCovidTracer.benchmarkCovidTracer    5000  avgt   50    96,33 ± 5,888  ms/op
 ```
 
 <!-- Tests -->
