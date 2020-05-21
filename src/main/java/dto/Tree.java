@@ -8,7 +8,7 @@ public class Tree {
     private List<Chain> chains;
     private List<Person> where_update;
 
-    private List<Person> peopleToAdd;
+    private final List<Person> waitingList;
 
     private Chain[] top_chains;
     private int top_chain_weight;
@@ -31,7 +31,7 @@ public class Tree {
 
         where_update = new ArrayList<>();
         where_update.add(root);
-        peopleToAdd = new ArrayList<>();
+        waitingList = new ArrayList<>();
         last_update = root.getDiagnosed_ts();
     }
 
@@ -131,7 +131,7 @@ public class Tree {
         p.setTree_in(this);
         p.setIn_the_tree(false);
 
-        peopleToAdd.add(p);
+        waitingList.add(p);
         potential_top_chain_weight += 10;
         last_update = p.getDiagnosed_ts();
     }
@@ -202,8 +202,8 @@ public class Tree {
         this.where_update = where_update;
     }
 
-    public List<Person> getPeopleToAdd() {
-        return peopleToAdd;
+    public List<Person> getWaitingList() {
+        return waitingList;
     }
 
     public int getPotential_top_chain_weight() {

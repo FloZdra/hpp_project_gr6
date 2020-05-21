@@ -27,7 +27,6 @@ public class Person implements Comparable<Person>, Cloneable {
 
     // Recursive method (Top to bottom)
     public void update(int actual_ts, int chain_weight, Person root, List<Chain> chains, boolean have_to_be_added) {
-        //if (weight > 0) {
         int ts_elapsed = actual_ts - diagnosed_ts;
         weight = chain_weight;
         if (ts_elapsed <= 604800) {
@@ -35,13 +34,10 @@ public class Person implements Comparable<Person>, Cloneable {
         } else if (ts_elapsed <= 1209600) {
             weight += 4;
         }
-        // }
 
         if (weight == 0) {
             PeopleHashMap.removePersonFromMap(this);
-        }
-        // optimize
-        if (weight != 0 && have_to_be_added) {
+        } else if (have_to_be_added) {
             this.getTree_in().getWhere_update().add(this);
             have_to_be_added = false;
         }
