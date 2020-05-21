@@ -10,7 +10,7 @@
     <img src="https://www.telecom-st-etienne.fr/wp-content/uploads/sites/3/2015/12/logo_tse_H_BL_web1-1.png" alt="Logo" >
   </a>
 
-  <h3 align="center">High Performance Computing Group 6</h3>
+  <h3 align="center">High Performance Computing Project - Group 6</h3>
 
   <p align="center">
     Projet de programmation haute performance 2019 - 2020.
@@ -23,6 +23,7 @@
 
 * [A propos](#a-propos-du-projet)
   * [Réalisé avec](#réalisé-avec)
+  * [Auteurs](#auteurs)
 * [Commmencer](#getting-started)
   * [Prerequis](#prerequisites)
   * [Installation](#installation)
@@ -40,6 +41,10 @@ TODO
 * [JMH](https://openjdk.java.net/projects/code-tools/jmh/)
 * [IntelliJ IDEA](https://www.jetbrains.com/idea/)
 * [Github](https://github.com/)
+
+### Auteurs
+Your Name - [@your_linkedin](https://linkedin.com/your_username) - email@example.com
+
 
 <!-- GETTING STARTED -->
 ## Commmencer
