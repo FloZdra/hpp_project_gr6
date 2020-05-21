@@ -1,7 +1,6 @@
 package dto;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -13,6 +12,8 @@ public class Person implements Comparable<Person>, Cloneable {
     private int weight;
     private Person contaminated_by;
     private List<Person> infect;
+    private Tree tree_in;
+    private boolean in_the_tree;
 
     public Person(String country, int id, int diagnosed_ts, int contaminated_by_id) {
         this.country = country;
@@ -21,24 +22,31 @@ public class Person implements Comparable<Person>, Cloneable {
         this.contaminated_by_id = contaminated_by_id;
         contaminated_by = null;
         this.infect = new ArrayList<>();
+        in_the_tree = false;
     }
 
     // Recursive method (Top to bottom)
-    public void update(int actual_ts, int chain_weight, Person root, List<Chain> chains) {
-        if (weight > 0) {
-            int ts_elapsed = actual_ts - diagnosed_ts;
-            weight = chain_weight;
-            if (ts_elapsed <= 604800) {
-                weight += 10;
-            } else if (ts_elapsed <= 1209600) {
-                weight += 4;
-            }
+    public void update(int actual_ts, int chain_weight, Person root, List<Chain> chains, boolean have_to_be_added) {
+        int ts_elapsed = actual_ts - diagnosed_ts;
+        weight = chain_weight;
+        if (ts_elapsed <= 604800) {
+            weight += 10;
+        } else if (ts_elapsed <= 1209600) {
+            weight += 4;
         }
+
+        if (weight == 0) {
+            PeopleHashMap.removePersonFromMap(this);
+        } else if (have_to_be_added) {
+            this.getTree_in().getWhere_update().add(this);
+            have_to_be_added = false;
+        }
+
         if (this.infect.isEmpty()) {
             chains.add(new Chain(root, this));
         } else {
             for (Person p : infect) {
-                p.update(actual_ts, weight, root, chains);
+                p.update(actual_ts, weight, root, chains, have_to_be_added);
             }
         }
     }
@@ -138,5 +146,21 @@ public class Person implements Comparable<Person>, Cloneable {
 
     public void setInfect(List<Person> infect) {
         this.infect = infect;
+    }
+
+    public Tree getTree_in() {
+        return tree_in;
+    }
+
+    public void setTree_in(Tree tree_in) {
+        this.tree_in = tree_in;
+    }
+
+    public void setIn_the_tree(boolean b) {
+        this.in_the_tree = b;
+    }
+
+    public boolean isIn_the_tree() {
+        return in_the_tree;
     }
 }
