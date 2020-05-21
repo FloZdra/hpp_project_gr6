@@ -10,7 +10,7 @@
     <img src="https://www.telecom-st-etienne.fr/wp-content/uploads/sites/3/2015/12/logo_tse_H_BL_web1-1.png" alt="Logo" >
   </a>
 
-  <h3 align="center">High Performance Computing Group 6</h3>
+  <h3 align="center">High Performance Computing Project - Group 6</h3>
 
   <p align="center">
     Projet de programmation haute performance 2019 - 2020.
