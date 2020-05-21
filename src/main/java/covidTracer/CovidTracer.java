@@ -28,14 +28,6 @@ public class CovidTracer {
     List<URL> url_files;
     PrintWriter writer = null;
 
-    List<Tree> trees = new ArrayList<>();
-
-    Chain top_1_chain = null;
-    Chain top_2_chain = null;
-    Chain top_3_chain = null;
-
-    int min_top_chain = 0;
-
     public CovidTracer(List<URL> urls) {
         url_files = urls;
     }
@@ -89,8 +81,8 @@ public class CovidTracer {
             }
         }
 
-        BlockingQueue<Person> blockingQueueRead = new LinkedBlockingDeque<>(100);
-        BlockingQueue<String> blockingQueueWrite = new LinkedBlockingDeque<>(100);
+        BlockingQueue<Person> blockingQueueRead = new LinkedBlockingDeque<>(5000);
+        BlockingQueue<String> blockingQueueWrite = new LinkedBlockingDeque<>(5000);
         //ExecutorService executor = Executors.newFixedThreadPool(3);
 
         // TODO optimize parameters (not necessary to be global)
@@ -183,8 +175,13 @@ class readNewPersonRunnable implements Runnable {
 class addNewPersonRunnable implements Runnable {
     BlockingQueue<Person> blockingQueueRead;
     BlockingQueue<String> blockingQueueWrite;
-    List<Tree> trees;
     boolean readerIsAlive;
+
+    List<Tree> trees;
+    Chain top_1_chain = null;
+    Chain top_2_chain = null;
+    Chain top_3_chain = null;
+    int min_top_chain = 0;
 
     public addNewPersonRunnable(BlockingQueue<Person> blockingQueueRead, BlockingQueue<String> blockingQueueWrite, boolean readerIsAlive) {
         this.blockingQueueRead = blockingQueueRead;
@@ -198,127 +195,133 @@ class addNewPersonRunnable implements Runnable {
     }
 
     public void addNewPerson() {
+        int i = 1;
         while (CovidTracer.readThread.isAlive() || !blockingQueueRead.isEmpty()) {
             //System.out.println("Add New Person thread started");
-            if(!blockingQueueRead.isEmpty()){
+            if (!blockingQueueRead.isEmpty()) {
                 try {
                     Person new_person = blockingQueueRead.take();
 
+                    if (i % 5000 == 0) {
+                        System.out.println(i);
+                    }
+                    i++;
+
                     // Flo part
- // Update Part
-            min_top_chain = 0;
-            if (top_1_chain != null) {
-                top_1_chain.getRoot().getTree_in().updateTree(new_person.getDiagnosed_ts());
-                Tree t = top_1_chain.getRoot().getTree_in();
-                min_top_chain = t.getWeightOfChainEndingWith(top_1_chain.getEnd());
-            }
-            if (top_2_chain != null) {
-                top_2_chain.getRoot().getTree_in().updateTree(new_person.getDiagnosed_ts());
-                Tree t = top_2_chain.getRoot().getTree_in();
-                min_top_chain = Integer.min(min_top_chain, t.getWeightOfChainEndingWith(top_2_chain.getEnd()));
-            }
-            if (top_3_chain != null) {
-                top_3_chain.getRoot().getTree_in().updateTree(new_person.getDiagnosed_ts());
-                Tree t = top_3_chain.getRoot().getTree_in();
-                min_top_chain = Integer.min(min_top_chain, t.getWeightOfChainEndingWith(top_3_chain.getEnd()));
-            }
+                    // Update Part
+                    min_top_chain = 0;
+                    if (top_1_chain != null) {
+                        top_1_chain.getRoot().getTree_in().updateTree(new_person.getDiagnosed_ts());
+                        Tree t = top_1_chain.getRoot().getTree_in();
+                        min_top_chain = t.getWeightOfChainEndingWith(top_1_chain.getEnd());
+                    }
+                    if (top_2_chain != null) {
+                        top_2_chain.getRoot().getTree_in().updateTree(new_person.getDiagnosed_ts());
+                        Tree t = top_2_chain.getRoot().getTree_in();
+                        min_top_chain = Integer.min(min_top_chain, t.getWeightOfChainEndingWith(top_2_chain.getEnd()));
+                    }
+                    if (top_3_chain != null) {
+                        top_3_chain.getRoot().getTree_in().updateTree(new_person.getDiagnosed_ts());
+                        Tree t = top_3_chain.getRoot().getTree_in();
+                        min_top_chain = Integer.min(min_top_chain, t.getWeightOfChainEndingWith(top_3_chain.getEnd()));
+                    }
 
-            // Update trees
-            List<Tree> new_trees = new ArrayList<>();
-            ListIterator<Tree> treeIterator = trees.listIterator();
-            while (treeIterator.hasNext()) {
-                Tree t = treeIterator.next();
+                    // Update trees
+                    List<Tree> new_trees = new ArrayList<>();
+                    ListIterator<Tree> treeIterator = trees.listIterator();
+                    while (treeIterator.hasNext()) {
+                        Tree t = treeIterator.next();
 
-                // Only for trees which have a potential
-                if (t.getPotential_top_chain_weight() + 10 >= min_top_chain) {
+                        // Only for trees which have a potential
+                        if (t.getPotential_top_chain_weight() + 10 >= min_top_chain) {
 
-                    // Add every person in waiting list
-                    ListIterator<Person> personIterator = t.getWaitingList().listIterator();
-                    while (personIterator.hasNext()) {
-                        Person personToAdd = personIterator.next();
-                        Person contamined_by = PeopleHashMap.getPersonWithId(personToAdd.getContaminated_by_id());
+                            // Add every person in waiting list
+                            ListIterator<Person> personIterator = t.getWaitingList().listIterator();
+                            while (personIterator.hasNext()) {
+                                Person personToAdd = personIterator.next();
+                                Person contamined_by = PeopleHashMap.getPersonWithId(personToAdd.getContaminated_by_id());
 
-                        if (contamined_by == null) {
-                            new_trees.add(new Tree(personToAdd));
-                        } else {
-                            Tree tree_to_update = contamined_by.getTree_in();
-                            tree_to_update.updateTree(personToAdd.getDiagnosed_ts());
+                                if (contamined_by == null) {
+                                    new_trees.add(new Tree(personToAdd));
+                                } else {
+                                    Tree tree_to_update = contamined_by.getTree_in();
+                                    tree_to_update.updateTree(personToAdd.getDiagnosed_ts());
 
-                            if (contamined_by.getWeight() == 0) {
-                                new_trees.add(new Tree(personToAdd));
-                            } else {
-                                tree_to_update.addPersonToTree(personToAdd, contamined_by);
+                                    if (contamined_by.getWeight() == 0) {
+                                        new_trees.add(new Tree(personToAdd));
+                                    } else {
+                                        tree_to_update.addPersonToTree(personToAdd, contamined_by);
+                                    }
+                                }
+                                personIterator.remove();
                             }
+                            t.updateTree(new_person.getDiagnosed_ts());
+
+                            if (t.getChains().isEmpty())
+                                treeIterator.remove();
                         }
-                        personIterator.remove();
+                        if (new_person.getDiagnosed_ts() - t.getLast_update() > 1209600) {
+                            t.deleteTree();
+                            treeIterator.remove();
+                        }
                     }
-                    t.updateTree(new_person.getDiagnosed_ts());
+                    trees.addAll(new_trees);
 
-                    if (t.getChains().isEmpty())
-                        treeIterator.remove();
-                }
-                if (new_person.getDiagnosed_ts() - t.getLast_update() > 1209600) {
-                    t.deleteTree();
-                    treeIterator.remove();
-                }
-            }
-            trees.addAll(new_trees);
+                    // Add person to HashMap
+                    PeopleHashMap.addPersonToMap(new_person);
 
-            // Add person to HashMap
-            PeopleHashMap.addPersonToMap(new_person);
-
-            // If the person is contaminated by someone unknown
-            if (new_person.getContaminated_by_id() == -1) {
-                trees.add(new Tree(new_person));
-            } else {
-
-                // If we found the person who contaminated the new person
-                Person contaminated_by = PeopleHashMap.getPersonWithId(new_person.getContaminated_by_id());
-
-                // We have 3 cases here :
-                // First, IF the contaminator does not exist : we create a tree
-                // ELSE, IF the person exist (so he has a weight != 0), then IF the tree has a potential to be in the top 3,
-                // we add him in the tree, OTHERWISE we had him iun the waiting list
-                // ELSE, IF the contaminator exist but he is not in a tree (so he is in a waiting list of a tree),
-                // we need to had the new_person in the waiting list
-
-                if (contaminated_by == null) {
-                    trees.add(new Tree(new_person));
-                } else if (contaminated_by.isIn_the_tree()) {
-                    // If the tree has no potential to be in top 3, we put the new person in the waiting list,
-                    // otherwise we add him in the tree
-                    Tree tree_to_add = contaminated_by.getTree_in();
-                    if (tree_to_add.getPotential_top_chain_weight() + 10 >= min_top_chain) {
-                        tree_to_add.addPersonToTree(new_person, contaminated_by);
+                    // If the person is contaminated by someone unknown
+                    if (new_person.getContaminated_by_id() == -1) {
+                        trees.add(new Tree(new_person));
                     } else {
-                        tree_to_add.addPersonToWaiting(new_person);
+
+                        // If we found the person who contaminated the new person
+                        Person contaminated_by = PeopleHashMap.getPersonWithId(new_person.getContaminated_by_id());
+
+                        // We have 3 cases here :
+                        // First, IF the contaminator does not exist : we create a tree
+                        // ELSE, IF the person exist (so he has a weight != 0), then IF the tree has a potential to be in the top 3,
+                        // we add him in the tree, OTHERWISE we had him iun the waiting list
+                        // ELSE, IF the contaminator exist but he is not in a tree (so he is in a waiting list of a tree),
+                        // we need to had the new_person in the waiting list
+
+                        if (contaminated_by == null) {
+                            trees.add(new Tree(new_person));
+                        } else if (contaminated_by.isIn_the_tree()) {
+                            // If the tree has no potential to be in top 3, we put the new person in the waiting list,
+                            // otherwise we add him in the tree
+                            Tree tree_to_add = contaminated_by.getTree_in();
+                            if (tree_to_add.getPotential_top_chain_weight() + 10 >= min_top_chain) {
+                                tree_to_add.addPersonToTree(new_person, contaminated_by);
+                            } else {
+                                tree_to_add.addPersonToWaiting(new_person);
+                            }
+                        } else if (!contaminated_by.isIn_the_tree()) {
+                            Tree tree_to_add = contaminated_by.getTree_in();
+                            tree_to_add.addPersonToWaiting(new_person);
+                        }
                     }
-                } else if (!contaminated_by.isIn_the_tree()) {
-                    Tree tree_to_add = contaminated_by.getTree_in();
-                    tree_to_add.addPersonToWaiting(new_person);
-                }
-            }
 
-            top_1_chain = top_2_chain = top_3_chain = null;
+                    top_1_chain = top_2_chain = top_3_chain = null;
 
-            for (Tree t : trees) {
-                if (t.getLast_update() == new_person.getDiagnosed_ts()) {
-                    Chain[] top_tree_chains = t.getTop_chains();
-                    updateTopChains(top_tree_chains[0]);
-                    updateTopChains(top_tree_chains[1]);
-                    updateTopChains(top_tree_chains[2]);
-                }
-            }
-            StringBuilder sb = new StringBuilder();
+                    for (Tree t : trees) {
+                        if (t.getLast_update() == new_person.getDiagnosed_ts()) {
+                            Chain[] top_tree_chains = t.getTop_chains();
+                            updateTopChains(top_tree_chains[0]);
+                            updateTopChains(top_tree_chains[1]);
+                            updateTopChains(top_tree_chains[2]);
+                        }
+                    }
+                    StringBuilder sb = new StringBuilder();
 
-            if (top_1_chain != null)
-                sb.append(top_1_chain.toString());
-            if (top_2_chain != null)
-                sb.append(top_2_chain.toString());
-            if (top_3_chain != null)
-                sb.append(top_3_chain.toString());
-                  
-                  
+                    if (top_1_chain != null)
+                        sb.append(top_1_chain.toString());
+                    if (top_2_chain != null)
+                        sb.append(top_2_chain.toString());
+                    if (top_3_chain != null)
+                        sb.append(top_3_chain.toString());
+
+
                     blockingQueueWrite.put(sb.toString());
 
                 } catch (InterruptedException e) {

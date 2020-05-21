@@ -1,8 +1,5 @@
 package utils;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.IOException;

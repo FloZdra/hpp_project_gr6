@@ -2,8 +2,6 @@ package utils;
 
 import dto.Person;
 
-import java.io.IOException;
-
 /**
  * Transform a string to a Person
  * help from : https://www.baeldung.com/java-read-lines-large-file
@@ -19,13 +17,11 @@ public class Parser {
                 .substring(1); // Remove first blank space
         String contaminated_by = values[5].substring(1); // Remove first blank space
 
-        Person personToReturn = new Person(
+        return new Person(
                 country,
                 Integer.parseInt(person_id),
                 Integer.parseInt(timestamp),
                 contaminated_by.equals("unknown") ? -1 : Integer.parseInt(contaminated_by)
         );
-
-        return personToReturn;
     }
 }
