@@ -5,3 +5,5 @@
 
 
 # hpp_project
+
+Done 1 000 000 datat in 1199591 ms ( ~20 minutes)
