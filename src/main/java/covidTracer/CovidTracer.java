@@ -79,14 +79,8 @@ public class CovidTracer {
             }
         }
 
-        int i = 1;
         boolean end;
         do {
-
-            if (i % 5000 == 0)
-                System.out.println(i);
-            i++;
-
             // Find the file with the oldest person
             Person next_person = initialList.get(0);
             for (Person person : initialList) {
