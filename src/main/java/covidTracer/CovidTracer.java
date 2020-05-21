@@ -82,28 +82,28 @@ public class CovidTracer {
 
         boolean end;
         do {
-//            if (i % 5000 == 0) {
-//                System.out.println(i);
-//                OptionalDouble up = PeopleHashMap.update_time.stream().mapToDouble(x -> x).average();
-//                OptionalDouble add_p_h = PeopleHashMap.add_person_to_hashmap.stream().mapToDouble(x -> x).average();
-//                OptionalDouble add_p_t = PeopleHashMap.add_person_to_tree.stream().mapToDouble(x -> x).average();
-//                OptionalDouble get_c = PeopleHashMap.get_chains.stream().mapToDouble(x -> x).average();
-//                OptionalDouble write = PeopleHashMap.writing.stream().mapToDouble(x -> x).average();
-//
-//                System.out.print("Update time : " + up.getAsDouble() + "\t\t");
-//                System.out.print("Add person hashmap time : " + add_p_h.getAsDouble() + "\t\t");
-//                System.out.print("Add person tree time : " + add_p_t.getAsDouble() + "\t\t");
-//                System.out.print("Get chains time : " + get_c.getAsDouble() + "\t\t");
-//                System.out.print("Writing time : " + write.getAsDouble() + "\n");
-//
-//                PeopleHashMap.update_time.clear();
-//                PeopleHashMap.add_person_to_hashmap.clear();
-//                PeopleHashMap.add_person_to_tree.clear();
-//                PeopleHashMap.get_chains.clear();
-//                PeopleHashMap.writing.clear();
-//            }
-//
-//            i++;
+            if (i % 5000 == 0) {
+                System.out.println(i);
+                OptionalDouble up = PeopleHashMap.update_time.stream().mapToDouble(x -> x).average();
+                OptionalDouble add_p_h = PeopleHashMap.add_person_to_hashmap.stream().mapToDouble(x -> x).average();
+                OptionalDouble add_p_t = PeopleHashMap.add_person_to_tree.stream().mapToDouble(x -> x).average();
+                OptionalDouble get_c = PeopleHashMap.get_chains.stream().mapToDouble(x -> x).average();
+                OptionalDouble write = PeopleHashMap.writing.stream().mapToDouble(x -> x).average();
+
+                System.out.print("Update time : " + up.getAsDouble() + "\t\t");
+                System.out.print("Add person hashmap time : " + add_p_h.getAsDouble() + "\t\t");
+                System.out.print("Add person tree time : " + add_p_t.getAsDouble() + "\t\t");
+                System.out.print("Get chains time : " + get_c.getAsDouble() + "\t\t");
+                System.out.print("Writing time : " + write.getAsDouble() + "\n");
+
+                PeopleHashMap.update_time.clear();
+                PeopleHashMap.add_person_to_hashmap.clear();
+                PeopleHashMap.add_person_to_tree.clear();
+                PeopleHashMap.get_chains.clear();
+                PeopleHashMap.writing.clear();
+            }
+
+            i++;
 
             // Find the file with the oldest person
             Person next_person = initialList.get(0);
@@ -131,17 +131,17 @@ public class CovidTracer {
         }
         while (!end);
 
-//        OptionalDouble up = PeopleHashMap.update_time.stream().mapToDouble(x -> x).average();
-//        OptionalDouble add_p_h = PeopleHashMap.add_person_to_hashmap.stream().mapToDouble(x -> x).average();
-//        OptionalDouble add_p_t = PeopleHashMap.add_person_to_tree.stream().mapToDouble(x -> x).average();
-//        OptionalDouble get_c = PeopleHashMap.get_chains.stream().mapToDouble(x -> x).average();
-//        OptionalDouble write = PeopleHashMap.writing.stream().mapToDouble(x -> x).average();
-//
-//        System.out.print("Update time : " + up.getAsDouble() + "\t\t");
-//        System.out.print("Add person hashmap time : " + add_p_h.getAsDouble() + "\t\t");
-//        System.out.print("Add person tree time : " + add_p_t.getAsDouble() + "\t\t");
-//        System.out.print("Get chains time : " + get_c.getAsDouble() + "\t\t");
-//        System.out.print("Writing time : " + write.getAsDouble() + "\n");
+        OptionalDouble up = PeopleHashMap.update_time.stream().mapToDouble(x -> x).average();
+        OptionalDouble add_p_h = PeopleHashMap.add_person_to_hashmap.stream().mapToDouble(x -> x).average();
+        OptionalDouble add_p_t = PeopleHashMap.add_person_to_tree.stream().mapToDouble(x -> x).average();
+        OptionalDouble get_c = PeopleHashMap.get_chains.stream().mapToDouble(x -> x).average();
+        OptionalDouble write = PeopleHashMap.writing.stream().mapToDouble(x -> x).average();
+
+        System.out.print("Update time : " + up.getAsDouble() + "\t\t");
+        System.out.print("Add person hashmap time : " + add_p_h.getAsDouble() + "\t\t");
+        System.out.print("Add person tree time : " + add_p_t.getAsDouble() + "\t\t");
+        System.out.print("Get chains time : " + get_c.getAsDouble() + "\t\t");
+        System.out.print("Writing time : " + write.getAsDouble() + "\n");
 
     }
 
@@ -295,17 +295,11 @@ public class CovidTracer {
             top_1_chain = top_2_chain = top_3_chain = null;
 
             for (Tree t : trees) {
-                for (Chain c : t.getChains()) {
-                    if (top_1_chain == null || c.compareTo(top_1_chain) > 0) {
-                        top_3_chain = top_2_chain;
-                        top_2_chain = top_1_chain;
-                        top_1_chain = c;
-                    } else if (top_2_chain == null || c.compareTo(top_2_chain) > 0) {
-                        top_3_chain = top_2_chain;
-                        top_2_chain = c;
-                    } else if (top_3_chain == null || c.compareTo(top_3_chain) > 0) {
-                        top_3_chain = c;
-                    }
+                if (t.getLast_update() == new_person.getDiagnosed_ts()) {
+                    Chain[] top_tree_chains = t.getTop_chains();
+                    updateTopChains(top_tree_chains[0]);
+                    updateTopChains(top_tree_chains[1]);
+                    updateTopChains(top_tree_chains[2]);
                 }
             }
             StringBuilder sb = new StringBuilder();
@@ -349,6 +343,20 @@ public class CovidTracer {
             PeopleHashMap.add_person_to_tree.add(add_person_to_tree);
             PeopleHashMap.get_chains.add(get_chains);
             PeopleHashMap.writing.add(writing);
+        }
+    }
+
+    public void updateTopChains(Chain c) {
+        if (c == null) return;
+        if (top_1_chain == null || c.compareTo(top_1_chain) > 0) {
+            top_3_chain = top_2_chain;
+            top_2_chain = top_1_chain;
+            top_1_chain = c;
+        } else if (top_2_chain == null || c.compareTo(top_2_chain) > 0) {
+            top_3_chain = top_2_chain;
+            top_2_chain = c;
+        } else if (top_3_chain == null || c.compareTo(top_3_chain) > 0) {
+            top_3_chain = c;
         }
     }
 

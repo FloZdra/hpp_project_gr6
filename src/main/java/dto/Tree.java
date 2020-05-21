@@ -1,8 +1,6 @@
 package dto;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 public class Tree {
 
@@ -12,6 +10,7 @@ public class Tree {
 
     private List<Person> peopleToAdd;
 
+    private Chain[] top_chains;
     private int top_chain_weight;
     private int potential_top_chain_weight;
     private int last_update;
@@ -21,13 +20,18 @@ public class Tree {
         this.root.setWeight(10);
         this.root.setTree_in(this);
         this.root.setIn_the_tree(true);
+
+        top_chains = new Chain[3];
         chains = new ArrayList<>();
-        chains.add(new Chain(root, root));
+        top_chains[0] = new Chain(root, root);
+        chains.add(top_chains[0]);
+
+        top_chain_weight = 10;
+        potential_top_chain_weight = 10;
+
         where_update = new ArrayList<>();
         where_update.add(root);
         peopleToAdd = new ArrayList<>();
-        top_chain_weight = 10;
-        potential_top_chain_weight = 10;
         last_update = root.getDiagnosed_ts();
     }
 
@@ -56,16 +60,24 @@ public class Tree {
                 if (c.getEnd().equals(contaminated_by)) {
                     c.setWeight(new_person.getWeight());
                     c.setEnd(new_person);
+                    if (!c.equals(top_chains[0]) && !c.equals(top_chains[1]) && !c.equals(top_chains[2])) {
+                        updateTopChains(c);
+                    } else {
+                        sortTopChains();
+                    }
                 }
             }
         } else {
-            chains.add(new Chain(root, new_person));
+            Chain c = new Chain(root, new_person);
+            chains.add(c);
+            updateTopChains(c);
         }
     }
 
     public void updateTree(int actual_ts) {
 
         chains.clear();
+        top_chains = new Chain[3];
 
         // Update only where it is needed
         List<Person> where_update_now = new ArrayList<>(where_update);
@@ -84,6 +96,8 @@ public class Tree {
             if (c.getEnd().getWeight() == 0) {
                 deleteChain(c.getEnd());
                 iterator.remove();
+            } else {
+                updateTopChains(c);
             }
         }
 
@@ -131,6 +145,37 @@ public class Tree {
         return 0;
     }
 
+    public void updateTopChains(Chain c) {
+        if (top_chains[0] == null || c.compareTo(top_chains[0]) > 0) {
+            top_chains[2] = top_chains[1];
+            top_chains[1] = top_chains[0];
+            top_chains[0] = c;
+        } else if (top_chains[1] == null || c.compareTo(top_chains[1]) > 0) {
+            top_chains[2] = top_chains[1];
+            top_chains[1] = c;
+        } else if (top_chains[2] == null || c.compareTo(top_chains[2]) > 0) {
+            top_chains[2] = c;
+        }
+    }
+
+
+    private void sortTopChains() {
+        if (top_chains[1] != null) {
+            if (top_chains[1].compareTo(top_chains[0]) > 0) {
+                Chain temp = top_chains[0];
+                top_chains[0] = top_chains[1];
+                top_chains[1] = temp;
+            }
+            if(top_chains[2] != null) {
+                if (top_chains[2].compareTo(top_chains[1]) > 0) {
+                    Chain temp = top_chains[1];
+                    top_chains[1] = top_chains[2];
+                    top_chains[2] = temp;
+                }
+            }
+        }
+    }
+
     // Generated method
 
     public List<Chain> getChains() {
@@ -167,5 +212,9 @@ public class Tree {
 
     public int getLast_update() {
         return last_update;
+    }
+
+    public Chain[] getTop_chains() {
+        return top_chains;
     }
 }
