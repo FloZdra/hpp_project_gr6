@@ -52,4 +52,5 @@ public class Chain implements Comparable<Chain> {
     public void setWeight(int weight) {
         this.weight = weight;
     }
+
 }
