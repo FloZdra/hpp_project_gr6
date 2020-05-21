@@ -10,10 +10,11 @@ import utils.Parser;
 
 import java.io.*;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.stream.Collectors;
 
@@ -163,12 +164,8 @@ class readNewPersonRunnable implements Runnable {
                 e.printStackTrace();
             }
             end = fileReaders.isEmpty();
-
-            //System.out.println("Read new person ended");
-            //System.out.println("Blocking queue read contains : " + blockingQueueRead.size());
         }
         while (!end);
-        //System.out.println("Read has terminated");
     }
 }
 
@@ -195,19 +192,12 @@ class addNewPersonRunnable implements Runnable {
     }
 
     public void addNewPerson() {
-        int i = 1;
+
         while (CovidTracer.readThread.isAlive() || !blockingQueueRead.isEmpty()) {
-            //System.out.println("Add New Person thread started");
             if (!blockingQueueRead.isEmpty()) {
                 try {
                     Person new_person = blockingQueueRead.take();
 
-                    if (i % 5000 == 0) {
-                        System.out.println(i);
-                    }
-                    i++;
-
-                    // Flo part
                     // Update Part
                     min_top_chain = 0;
                     if (top_1_chain != null) {
@@ -263,10 +253,9 @@ class addNewPersonRunnable implements Runnable {
                                 treeIterator.remove();
 
                             // Update top chains
-                            Chain[] top_tree_chains = t.getTop_chains();
-                            updateTopChains(top_tree_chains[0]);
-                            updateTopChains(top_tree_chains[1]);
-                            updateTopChains(top_tree_chains[2]);
+                            for (Chain c : t.getTop_chains()) {
+                                updateTopChains(c);
+                            }
                         }
                         if (new_person.getDiagnosed_ts() - t.getLast_update() > 1209600) {
                             t.deleteTree();
@@ -313,7 +302,7 @@ class addNewPersonRunnable implements Runnable {
                         }
                     }
 
-                    // Update top chains only with tree modified
+                    // Update top chains only with the tree which has been modified
                     if (tree_modified != null) {
                         Chain[] top_tree_chains = tree_modified.getTop_chains();
                         for (Chain c : top_tree_chains) {
@@ -326,7 +315,6 @@ class addNewPersonRunnable implements Runnable {
                         }
                     }
 
-
                     StringBuilder sb = new StringBuilder();
 
                     if (top_1_chain != null)
@@ -336,15 +324,12 @@ class addNewPersonRunnable implements Runnable {
                     if (top_3_chain != null)
                         sb.append(top_3_chain.toString());
 
-
                     blockingQueueWrite.put(sb.toString());
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-            //System.out.println("Add New Person thread Ended");
-            //System.out.println("Blocking queue write contains : " + blockingQueueWrite.size());
         }
     }
 
@@ -404,7 +389,6 @@ class writeFileRunnable implements Runnable {
 
     public void writePersonToFile() {
         while (CovidTracer.addThread.isAlive() || !blockingQueueWrite.isEmpty()) {
-            //System.out.println("Write person threat started");
             if (!blockingQueueWrite.isEmpty()) {
                 try {
                     String sb = blockingQueueWrite.take();
@@ -413,7 +397,6 @@ class writeFileRunnable implements Runnable {
                     e.printStackTrace();
                 }
             }
-            //System.out.println("Write person thread Ended");
         }
     }
 }
