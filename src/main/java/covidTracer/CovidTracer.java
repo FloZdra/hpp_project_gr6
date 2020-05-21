@@ -228,24 +228,25 @@ public class CovidTracer {
                             sortTopChains();
                     }
                 }
-
-
-                StringBuilder sb = new StringBuilder();
-
-                if (top_1_chain != null)
-                    sb.append(top_1_chain.toString());
-                if (top_2_chain != null)
-                    sb.append(top_2_chain.toString());
-                if (top_3_chain != null)
-                    sb.append(top_3_chain.toString());
-
-                sb.deleteCharAt(sb.length() - 1); // Remove this line for comparing with Arnette's results
-
-                writer.write(sb.toString() + "\n"); // Remove trim() for comparing with Arnette's results
             }
 
+
+            StringBuilder sb = new StringBuilder();
+
+            if (top_1_chain != null)
+                sb.append(top_1_chain.toString());
+            if (top_2_chain != null)
+                sb.append(top_2_chain.toString());
+            if (top_3_chain != null)
+                sb.append(top_3_chain.toString());
+
+            sb.deleteCharAt(sb.length() - 1); // Remove this line for comparing with Arnette's results
+
+            writer.write(sb.toString() + "\n"); // Remove trim() for comparing with Arnette's results
         }
+
     }
+
 
     public void updateTopChains(Chain c) {
         if (c == null) return;
