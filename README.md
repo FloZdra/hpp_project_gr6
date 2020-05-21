@@ -22,7 +22,7 @@
 ## Table of Contents
 
 * [A propos](#a-propos-du-projet)
-  * [Réalisé avec](#realise-avec)
+  * [Réalisé avec](#réalisé-avec)
 * [Commmencer](#getting-started)
   * [Prerequis](#prerequisites)
   * [Installation](#installation)
@@ -43,13 +43,11 @@ TODO
 
 <!-- GETTING STARTED -->
 ## Commmencer
-
 Afin d'éxécuter le logiciel deux solutions s'offrent à vous :
 - lancer un benchmark jmh
 - lancer directement le projet dans votre IDE
 
 ### Prérequis
-
 Le projet a été testé et réalisé avec Java 13 de AdoptJDK (adopt-openj9-13.0.2-1) et la version 3.6.3 de Maven.
 L'IDE utilisé est IntelliJ et fournit la meilleur expérience out of the box mais le projet devrait fonctionner avec n'importe quel autre IDE.
 
