@@ -23,6 +23,7 @@
 
 * [A propos](#a-propos-du-projet)
   * [Réalisé avec](#réalisé-avec)
+  * [Auteurs](#auteurs)
 * [Commmencer](#getting-started)
   * [Prerequis](#prerequisites)
   * [Installation](#installation)
@@ -40,6 +41,10 @@ TODO
 * [JMH](https://openjdk.java.net/projects/code-tools/jmh/)
 * [IntelliJ IDEA](https://www.jetbrains.com/idea/)
 * [Github](https://github.com/)
+
+### Auteurs
+Your Name - [@your_linkedin](https://linkedin.com/your_username) - email@example.com
+
 
 <!-- GETTING STARTED -->
 ## Commmencer
