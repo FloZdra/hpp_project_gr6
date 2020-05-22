@@ -270,18 +270,18 @@ A chaque push sur dev ou master, on s'assure que :
 <!-- Optmisisations -->
 ## Optimisations apportées
 Une fois notre algorithme et notre code natif fonctionnant, nous avons apporté des modifications dans le but d'optimiser le code, notamment en temps. De ce fait, à chaque tentative d'optimisation, nous avons enregistré le temps d'exécution grâce au Benchmark en fonction du nombre de données en entrée puis nous l'avons comparé avec le temps d'exécution sur le code natif, comme vous pouvez le voir sous le tableau ci-dessous : 
-![Table_part1](https://github.com/kamilcglr/hpp_project_gr6/tree/dev/images/table1.png)
-![Table_part2](https://github.com/kamilcglr/hpp_project_gr6/tree/dev/images/table2.png)
+![Table_part1](https://github.com/kamilcglr/hpp_project_gr6/tree/blob/dev/images/table1.png)
+![Table_part2](https://github.com/kamilcglr/hpp_project_gr6/tree/blob/dev/images/table2.png)
 
 
 Avec ces calculs, nous avons donc obtenus les graphiques suivants, mettant en évidence l'évolution du temps d'exécution en fonction du changement opéré : 
 - Avec JMH :
 ![20_et_5k](https://github.com/kamilcglr/hpp_project_gr6/blob/dev/images/img1_avecJMH.PNG)
-![1M](https://github.com/kamilcglr/hpp_project_gr6/tree/dev/images/img2_avecJMH.png)
+![1M](https://github.com/kamilcglr/hpp_project_gr6/tree/blob/dev/images/img2_avecJMH.png)
 
 - Sans JMH :
-![20](https://github.com/kamilcglr/hpp_project_gr6/tree/dev/images/img1_sansJMH.png)
-![5k](https://github.com/kamilcglr/hpp_project_gr6/tree/dev/images/img2_sansJMH.png)
+![20](https://github.com/kamilcglr/hpp_project_gr6/tree/blob/dev/images/img1_sansJMH.png)
+![5k](https://github.com/kamilcglr/hpp_project_gr6/tree/blob/dev/images/img2_sansJMH.png)
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
