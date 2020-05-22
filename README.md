@@ -106,32 +106,32 @@ BenchmarkCovidTracer.benchmarkCovidTracer    5000  avgt   50    96,33 ± 5,888  
 La première étape de notre projet fût la conception de tests. En effet, afin de s'assurer que nos modifications dans le code n'apportaient pas d'erreur dans l'algorithme, nous avons effectué plusieurs tests vérifiant plusieurs cas. 
 
 - Test 1 : Exemple du sujet.
-  Fichiers d'entrée : 
-  France
-  1, "Cerise", "Dupond", "21/01/1963", 1584540000, unknown, " "
-  2, "Hervé", "Renoir", "11/03/1971", 1584712800, unknown, " "
-  Italy
-  3, "Valentina", "Rossi", "21/01/1963", 1584644400, 1, " "
-  4, "Marco", "Guili", "06/01/1956", 1585324800, unknown, " "
-  5, "Stella", "Capelli", "21/01/1949", 1587312000, 4, " "
-  Spain
-  6, "Ricardo", "Rodriguez", "03/10/1964", 1587052800, 4, " "
+  Fichiers d'entrée :  
+  France  
+  1, "Cerise", "Dupond", "21/01/1963", 1584540000, unknown, " "  
+  2, "Hervé", "Renoir", "11/03/1971", 1584712800, unknown, " "  
+  Italy  
+  3, "Valentina", "Rossi", "21/01/1963", 1584644400, 1, " "  
+  4, "Marco", "Guili", "06/01/1956", 1585324800, unknown, " "  
+  5, "Stella", "Capelli", "21/01/1949", 1587312000, 4, " "  
+  Spain  
+  6, "Ricardo", "Rodriguez", "03/10/1964", 1587052800, 4, " "  
   
 - Test 2 : Cas d'une personne faisant remonter une chaîne basse dans le classement. 
   Fichier d'entrée : 
   France 
-  1, "Cerise", "Dupond", "21/01/1963", 1584540000, "unknown" (18/03/2020) 
-  2, "Valentina", "Rossi", "21/01/1963", 1584579600, "1" (19/03/2020) 
-  3, "Hervé", "Renoir", "11/03/1971", 1584712800, "unknown" (20/03/2020) 
-  4, "Marco", "Guili", "06/01/1956", 1585324800, "unknown" (27/03/2020)
-  7, "Jamel", "Debbouze", "01/01/1973", 1585357200, "1" (28/03/2020) 
+  1, "Cerise", "Dupond", "21/01/1963", 1584540000, "unknown" (18/03/2020)  
+  2, "Valentina", "Rossi", "21/01/1963", 1584579600, "1" (19/03/2020)  
+  3, "Hervé", "Renoir", "11/03/1971", 1584712800, "unknown" (20/03/2020)   
+  4, "Marco", "Guili", "06/01/1956", 1585324800, "unknown" (27/03/2020)  
+  7, "Jamel", "Debbouze", "01/01/1973", 1585357200, "1" (28/03/2020)  
   
   Fichier de sortie : 
-  France, 1, 10;
-  France, 1, 20;
-  France, 1, 20; France, 3, 10;
-  France, 4, 10; France, 1, 8; France, 3, 4;
-  France, 1, 14; France, 4, 10; France, 1, 8;
+  France, 1, 10; 
+  France, 1, 20; 
+  France, 1, 20; France, 3, 10; 
+  France, 4, 10; France, 1, 8; France, 3, 4; 
+  France, 1, 14; France, 4, 10; France, 1, 8; 
   
 - Test 3 : Cas de deux personnes avec la même date de contamination.
   Fichier d'entrée :  
