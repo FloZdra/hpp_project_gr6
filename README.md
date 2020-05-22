@@ -270,25 +270,18 @@ A chaque push sur dev ou master, on s'assure que :
 <!-- Optmisisations -->
 ## Optimisations apportées
 Une fois notre algorithme et notre code natif fonctionnant, nous avons apporté des modifications dans le but d'optimiser le code, notamment en temps. De ce fait, à chaque tentative d'optimisation, nous avons enregistré le temps d'exécution grâce au Benchmark en fonction du nombre de données en entrée puis nous l'avons comparé avec le temps d'exécution sur le code natif, comme vous pouvez le voir sous le tableau ci-dessous : 
-Commit ID	Temps pour 20 (ms) |	Différence |	Error |	Temps pour 5k (ms) |	Différence |	Error |	Temps pour 1M (ms) |	Différence |
-----------------------------|-------------|--------|-------------------|-----------|-------|--------------------|-------------|---------
-649f23d9b063d59fd9a64ba1cabbf8ac7e64108b |	0,987 |	|	0,012 | 1018,652 |	|	18,556 |	|	|	No optimization				
-e8e86e96665b36839bfe3689e44824458868f8d9 | 	0,973 |	-1,42%  |	0,007 |	875,87 |	-14,02% |	16,045 |	| |		With HashMap				
-90ce59eee32d555d62447716e950170905dcffe1 |	1,072 |	10,17% |	0,006 |	485,729 |	-44,54% |	12,886 | | |			Adding sorting chains optimization				
-Not commited |	1,182 |	10,26% |	0,017 |	532,529 |	9,64% |	12,937 | | |			Adding update optimization v1 (regression)				
-1878b1971c6eaeac5b45deb669daf6f481637725 |	1,217 |	2,96% |	0,019 |	251,606 |	-52,75% |	9,985 | | |			Adding update optimization with potential top 3				
-918f0b98cb695a148acf887bdf2858ea5ba8f826 |	1,008 |	-17,17% |	0,012 |	133,555 |	-46,92% |	5,162 |	1199591 |	|	Adding calcul of top chains in update part				
-df5a1fe42714b76eac2e33a755835145b8250a54 |	1,233 |	22,32% |	0,022 |	96,33 |	-27,87% |	5,888 |	1280567 |	6,75% |	Adding threads				
+![Table_part1](https://github.com/kamilcglr/hpp_project_gr6/tree/dev/images/table1.png)
+![Table_part2](https://github.com/kamilcglr/hpp_project_gr6/tree/dev/images/table2.png)
 
 
 Avec ces calculs, nous avons donc obtenus les graphiques suivants, mettant en évidence l'évolution du temps d'exécution en fonction du changement opéré : 
 - Avec JMH :
-![20_et_5k](https://github.com/kamilcglr/hpp_project_gr6/images/img1_avecJMH.png)
-![1M](https://github.com/kamilcglr/hpp_project_gr6/images/img2_avecJMH.png)
+![20_et_5k](https://github.com/kamilcglr/hpp_project_gr6/tree/dev/images/img1_avecJMH.png)
+![1M](https://github.com/kamilcglr/hpp_project_gr6/tree/dev/images/img2_avecJMH.png)
 
 - Sans JMH :
-![20](https://github.com/kamilcglr/hpp_project_gr6/images/img1_sansJMH.png)
-![5k](https://github.com/kamilcglr/hpp_project_gr6/images/img2_sansJMH.png)
+![20](https://github.com/kamilcglr/hpp_project_gr6/tree/dev/images/img1_sansJMH.png)
+![5k](https://github.com/kamilcglr/hpp_project_gr6/tree/dev/images/img2_sansJMH.png)
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
