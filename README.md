@@ -276,7 +276,7 @@ Une fois notre algorithme et notre code natif fonctionnant, nous avons apporté 
 
 Avec ces calculs, nous avons donc obtenus les graphiques suivants, mettant en évidence l'évolution du temps d'exécution en fonction du changement opéré : 
 - Avec JMH :
-![20_et_5k](https://github.com/kamilcglr/hpp_project_gr6/tree/dev/images/img1_avecJMH.png)
+![20_et_5k](https://github.com/kamilcglr/hpp_project_gr6/blob/dev/images/img1_avecJMH.PNG)
 ![1M](https://github.com/kamilcglr/hpp_project_gr6/tree/dev/images/img2_avecJMH.png)
 
 - Sans JMH :
