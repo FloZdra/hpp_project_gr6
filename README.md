@@ -283,16 +283,12 @@ df5a1fe42714b76eac2e33a755835145b8250a54 |	1,233 |	22,32% |	0,022 |	96,33 |	-27,
 
 Avec ces calculs, nous avons donc obtenus les graphiques suivants, mettant en évidence l'évolution du temps d'exécution en fonction du changement opéré : 
 - Avec JMH :
-![GitHub Logo](/images/img1_avecJMH.png)
-Format: ![Alt Text](url)
-![GitHub Logo](/images/img2_avecJMH.png)
-Format: ![Alt Text](url)
+![20_et_5k](https://github.com/kamilcglr/hpp_project_gr6/images/img1_avecJMH.png)
+![1M](https://github.com/kamilcglr/hpp_project_gr6/images/img2_avecJMH.png)
 
 - Sans JMH :
-![GitHub Logo](/images/img1_sansJMH.png)
-Format: ![Alt Text](url)
-![GitHub Logo](/images/img2_sansJMH.png)
-Format: ![Alt Text](url)
+![20](https://github.com/kamilcglr/hpp_project_gr6/images/img1_sansJMH.png)
+![5k](https://github.com/kamilcglr/hpp_project_gr6/images/img2_sansJMH.png)
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
