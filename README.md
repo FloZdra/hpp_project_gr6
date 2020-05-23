@@ -21,11 +21,11 @@
 <!-- TABLE OF CONTENTS -->
 ## Table of Contents
 
-* [A propos](#a-propos-du-projet)
+* [A propos](#à-propos-du-projet)
   * [Réalisé avec](#réalisé-avec)
   * [Auteurs](#auteurs)
-* [Commmencer](#getting-started)
-  * [Prerequis](#prerequisites)
+* [Commencer](#commencer)
+  * [Prérequis](#prérequis)
   * [Installation](#installation)
 * [Benchmark](#benchmark)
 * [Tests](#tests)
@@ -33,8 +33,11 @@
 * [Optimisations apportées](#optimisations-apportées)
 
 <!-- ABOUT THE PROJECT -->
-## A propos du projet
-TODO
+## À propos du projet
+Ce projet a été réalisé dans le cadre de l'option programmation haute performance.
+Le but est de trouver les trois plus grandes chaines de contaminations dans des fichiers csv.
+La taille des échantillons varie de 20 à 1 000 0000. L'objectif est donc d'avoir un programme performant en traitant
+les données d'une manière optimale et rapide.
 
 ### Réalisé avec
 * [Java OpenJDK](https://openjdk.java.net/)
@@ -44,12 +47,14 @@ TODO
 * [Github](https://github.com/)
 
 ### Auteurs
-Your Name - [@your_linkedin](https://linkedin.com/your_username) - email@example.com
+Kamil CAGLAR - kamil.caglar@telecom-st-etienne.fr  
+Lisa CALERO - lisa.calero@telecom-st-etienne.fr  
+Florian ZDRADA - florian.zdrada@telecom-st-etienne.fr  
 
 
 <!-- GETTING STARTED -->
 ## Commmencer
-Afin d'éxécuter le logiciel deux solutions s'offrent à vous :
+Afin d'éxécuter l'application deux solutions s'offrent à vous :
 - lancer un benchmark jmh
 - lancer directement le projet dans votre IDE
 
@@ -140,19 +145,26 @@ A chaque push sur dev ou master, on s'assure que :
 
 <!-- Optimisations -->
 ## Optimisations apportées
-Une fois notre algorithme et notre code natif fonctionnant, nous avons apporté des modifications dans le but d'optimiser le code, notamment en temps. De ce fait, à chaque tentative d'optimisation, nous avons enregistré le temps d'exécution grâce au benchmark en fonction du nombre de données en entrée puis nous l'avons comparé avec le temps d'exécution sur le code natif, comme vous pouvez le voir sous le tableau ci-dessous : 
-![Table_part1](https://github.com/kamilcglr/hpp_project_gr6/tree/blob/dev/images/results_table.png)
+Une fois notre algorithme et notre code natif fonctionnant, nous avons apporté des modifications dans le but d'optimiser le code, notamment en temps. 
+De ce fait, à chaque tentative d'optimisation, nous avons enregistré le temps d'exécution grâce au benchmark jmh selon différentes tailles de fichiers.
+Puis nous l'avons comparé avec le temps d'exécution de la précédente optimisation.
+![Results_table](https://github.com/kamilcglr/hpp_project_gr6/tree/blob/dev/images/results_table.png)
 
+Sur ce second tableau, on peut voir que globalement, entre le premier algorithme naif et la dernière optimisation le temps
+d'éxécution a été divisé par 10 (pour 5000). 
+![Results_table_global](https://github.com/kamilcglr/hpp_project_gr6/tree/blob/dev/images/results_table_global.png)
 
-Avec ces calculs, nous avons donc obtenus les graphiques suivants, mettant en évidence l'évolution du temps d'exécution en fonction du changement opéré : 
+Avec ces résultats, nous avons donc obtenus les graphiques suivants, mettant en évidence l'évolution du temps d'exécution en fonction du changement opéré : 
 - Avec JMH :
 ![20](https://github.com/kamilcglr/hpp_project_gr6/blob/dev/images/20.PNG)
+Pour 20, l'optimisation ne peut pas être mesurée du fait de la taille très petite de l'échantillon.
+
 ![5k](https://github.com/kamilcglr/hpp_project_gr6/blob/dev/images/5K.PNG)
 ![20_5Kk](https://github.com/kamilcglr/hpp_project_gr6/blob/dev/images/20_5K.PNG)
 
-- Sans JMH :
+- Sans JMH (trop long) :
+Nous n'avons pas effectué de mesure avec l'algorithme naif pour 1 Million, le temps d'éxécution était beaucoup trop long (en jours).
 ![1M](https://github.com/kamilcglr/hpp_project_gr6/blob/dev/images/1M.PNG)
-
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
