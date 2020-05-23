@@ -19,15 +19,21 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.stream.Collectors;
 
 public class CovidTracer {
-    static boolean readThreadAlive = true;
-    static boolean addThreadAlive = true;
-
     static Thread readThread;
-    static Thread addThread;
     static Thread writeThread;
+    static boolean analyseFinished = false;
 
     List<URL> url_files;
     PrintWriter writer = null;
+
+    BlockingQueue<Person> blockingQueueRead;
+    BlockingQueue<String> blockingQueueWrite;
+
+    List<Tree> trees = new ArrayList<>();
+    Chain top_1_chain = null;
+    Chain top_2_chain = null;
+    Chain top_3_chain = null;
+    int min_top_chain = 0;
 
     public CovidTracer(List<URL> urls) {
         url_files = urls;
@@ -82,113 +88,34 @@ public class CovidTracer {
             }
         }
 
-        BlockingQueue<Person> blockingQueueRead = new LinkedBlockingDeque<>(5000);
-        BlockingQueue<String> blockingQueueWrite = new LinkedBlockingDeque<>(5000);
+        blockingQueueRead = new LinkedBlockingDeque<>(10000);
+        blockingQueueWrite = new LinkedBlockingDeque<>(5000);
         //ExecutorService executor = Executors.newFixedThreadPool(3);
 
         // TODO optimize parameters (not necessary to be global)
         readNewPersonRunnable readNewPersonRunnable = new readNewPersonRunnable(blockingQueueRead, initialList, fileReaders, parser);
-        addNewPersonRunnable addNewPersonRunnable = new addNewPersonRunnable(blockingQueueRead, blockingQueueWrite, readThreadAlive);
-        writeFileRunnable writeFileRunnable = new writeFileRunnable(writer, blockingQueueWrite, addThreadAlive);
+        writeFileRunnable writeFileRunnable = new writeFileRunnable(writer, blockingQueueWrite);
 
         readThread = new Thread(readNewPersonRunnable);
-        addThread = new Thread(addNewPersonRunnable);
         writeThread = new Thread(writeFileRunnable);
 
-        addThread.setPriority(10);
+        readThread.setPriority(1);
+        writeThread.setPriority(1);
 
         readThread.start();
-        addThread.start();
         writeThread.start();
+
+        // Main loop
+        addNewPerson();
+
+        analyseFinished = true;
+
         try {
             readThread.join();
-            addThread.join();
             writeThread.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }
-
-    public void copyFiles() {
-        // Copy generated output from target to src/main/resources
-        try {
-            InputStream inputStream = getClass().getResource("/output_generated/output.csv").openStream();
-            FileOutputStream fileOS = new FileOutputStream("src/main/resources/output_generated/output.csv");
-            int i = IOUtils.copy(inputStream, fileOS);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-}
-
-class readNewPersonRunnable implements Runnable {
-    BlockingQueue<Person> blockingQueueRead;
-    List<Person> initialList;
-    List<FileReader> fileReaders;
-    Parser parser;
-
-    public readNewPersonRunnable(BlockingQueue<Person> blockingQueueRead, List<Person> initialList, List<FileReader> fileReaders, Parser parser) {
-        this.blockingQueueRead = blockingQueueRead;
-        this.initialList = initialList;
-        this.fileReaders = fileReaders;
-        this.parser = parser;
-    }
-
-    public void run() {
-        readNewPerson();
-    }
-
-    public void readNewPerson() {
-        boolean end;
-        do {
-            // System.out.println("Read new person started");
-            // Add a new person to the queue
-            try {
-                // Find the file with the oldest person
-                Person next_person = initialList.stream()
-                        .sorted(Comparator.comparing(Person::getDiagnosed_ts))
-                        .collect(Collectors.toList()).get(0);
-
-                blockingQueueRead.put(next_person.clone());
-
-                int index_next_person = initialList.indexOf(next_person);
-                String read_string = fileReaders.get(index_next_person).readLine();
-
-                if (!read_string.equals("")) {
-                    initialList.set(index_next_person, parser.parseLine(fileReaders.get(index_next_person).getCountry(), read_string));
-                } else {
-                    fileReaders.remove(fileReaders.get(initialList.indexOf(next_person)));
-                    initialList.remove(next_person);
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            end = fileReaders.isEmpty();
-        }
-        while (!end);
-    }
-}
-
-class addNewPersonRunnable implements Runnable {
-    BlockingQueue<Person> blockingQueueRead;
-    BlockingQueue<String> blockingQueueWrite;
-    boolean readerIsAlive;
-
-    List<Tree> trees;
-    Chain top_1_chain = null;
-    Chain top_2_chain = null;
-    Chain top_3_chain = null;
-    int min_top_chain = 0;
-
-    public addNewPersonRunnable(BlockingQueue<Person> blockingQueueRead, BlockingQueue<String> blockingQueueWrite, boolean readerIsAlive) {
-        this.blockingQueueRead = blockingQueueRead;
-        this.blockingQueueWrite = blockingQueueWrite;
-        this.trees = new ArrayList<>();
-        this.readerIsAlive = readerIsAlive;
-    }
-
-    public void run() {
-        addNewPerson();
     }
 
     public void addNewPerson() {
@@ -376,18 +303,75 @@ class addNewPersonRunnable implements Runnable {
             }
         }
     }
+
+    public void copyFiles() {
+        // Copy generated output from target to src/main/resources
+        try {
+            InputStream inputStream = getClass().getResource("/output_generated/output.csv").openStream();
+            FileOutputStream fileOS = new FileOutputStream("src/main/resources/output_generated/output.csv");
+            int i = IOUtils.copy(inputStream, fileOS);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
+
+class readNewPersonRunnable implements Runnable {
+    BlockingQueue<Person> blockingQueueRead;
+    List<Person> initialList;
+    List<FileReader> fileReaders;
+    Parser parser;
+
+    public readNewPersonRunnable(BlockingQueue<Person> blockingQueueRead, List<Person> initialList, List<FileReader> fileReaders, Parser parser) {
+        this.blockingQueueRead = blockingQueueRead;
+        this.initialList = initialList;
+        this.fileReaders = fileReaders;
+        this.parser = parser;
+    }
+
+    public void run() {
+        readNewPerson();
+    }
+
+    public void readNewPerson() {
+        boolean end;
+        do {
+            // System.out.println("Read new person started");
+            // Add a new person to the queue
+            try {
+                // Find the file with the oldest person
+                Person next_person = initialList.stream()
+                        .sorted(Comparator.comparing(Person::getDiagnosed_ts))
+                        .collect(Collectors.toList()).get(0);
+
+                blockingQueueRead.put(next_person.clone());
+
+                int index_next_person = initialList.indexOf(next_person);
+                String read_string = fileReaders.get(index_next_person).readLine();
+
+                if (!read_string.equals("")) {
+                    initialList.set(index_next_person, parser.parseLine(fileReaders.get(index_next_person).getCountry(), read_string));
+                } else {
+                    fileReaders.remove(fileReaders.get(initialList.indexOf(next_person)));
+                    initialList.remove(next_person);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            end = fileReaders.isEmpty();
+        }
+        while (!end);
+    }
+}
+
 
 class writeFileRunnable implements Runnable {
     PrintWriter writer;
     BlockingQueue<String> blockingQueueWrite;
 
-    boolean adderIsAlive;
-
-    public writeFileRunnable(PrintWriter printWriter, BlockingQueue<String> blockingQueueWrite, boolean adderIsAlive) {
+    public writeFileRunnable(PrintWriter printWriter, BlockingQueue<String> blockingQueueWrite) {
         this.blockingQueueWrite = blockingQueueWrite;
         this.writer = printWriter;
-        this.adderIsAlive = adderIsAlive;
     }
 
     public void run() {
@@ -395,14 +379,12 @@ class writeFileRunnable implements Runnable {
     }
 
     public void writePersonToFile() {
-        while (CovidTracer.addThread.isAlive() || !blockingQueueWrite.isEmpty()) {
-            if (!blockingQueueWrite.isEmpty()) {
-                try {
-                    String sb = blockingQueueWrite.take();
-                    writer.write(sb.trim() + "\n"); // Remove trim() for comparing with Arnette's results
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        while (!CovidTracer.analyseFinished) {
+            try {
+                String sb = blockingQueueWrite.take();
+                writer.write(sb.trim() + "\n"); // Remove trim() for comparing with Arnette's results
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
