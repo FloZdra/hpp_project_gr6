@@ -5,7 +5,6 @@ import dto.PeopleHashMap;
 import dto.Person;
 import dto.Tree;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.math3.stat.regression.UpdatingMultipleLinearRegression;
 import utils.FileReader;
 import utils.Parser;
 
@@ -80,7 +79,12 @@ public class CovidTracer {
         }
 
         boolean end;
+        int i = 1;
         do {
+            if (i % 5000 == 0) {
+                System.out.println(i);
+            }
+            i++;
             // Find the file with the oldest person
             Person next_person = initialList.get(0);
             for (Person person : initialList) {
