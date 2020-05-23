@@ -103,43 +103,45 @@ BenchmarkCovidTracer.benchmarkCovidTracer    5000  avgt   50    96,33 ± 5,888  
 
 <!-- Tests -->
 ## Tests
-La première étape de notre projet fût la conception de tests. En effet, afin de s'assurer que nos modifications dans le code n'apportaient pas d'erreur dans l'algorithme, nous avons effectué plusieurs tests vérifiant plusieurs cas. 
+La première étape de notre projet fût la conception de tests d'intégrations et de tests unitaires. 
+Cela nous a permis de ne pas avoir de régressions durant la phase d'optimisations. 
+Nous avons effectué plusieurs tests vérifiant plusieurs cas critiques : 
 
-- [Test 1](https://github.com/kamilcglr/hpp_project_gr6/tree/dev/src/main/resources/input_test/test1) : Exemple du sujet.
+- [Test 1](https://github.com/kamilcglr/hpp_project_gr6/tree/dev/src/main/resources/input_test/test1): Exemple du sujet.
 
-- Test 2 : Cas d'une personne faisant remonter une chaîne basse dans le classement. 
+- [Test 2](https://github.com/kamilcglr/hpp_project_gr6/tree/dev/src/main/resources/input_test/test2): Cas d'une personne faisant remonter une chaîne basse dans le classement. 
 
-- Test 3 : Cas de deux personnes avec la même date de contamination.
+- [Test 3](https://github.com/kamilcglr/hpp_project_gr6/tree/dev/src/main/resources/input_test/test3): Cas de deux personnes avec la même date de contamination.
  
-- Test 4 : Plus de 4 chaînes en mémoire.
+- [Test 4](https://github.com/kamilcglr/hpp_project_gr6/tree/dev/src/main/resources/input_test/test4): Plus de 4 chaînes en mémoire.
 
-- Test 5 : Cas avec un patient qui devient le nouveau root (son contaminateur est à 0).
+- [Test 5](https://github.com/kamilcglr/hpp_project_gr6/tree/dev/src/main/resources/input_test/test5): Cas avec un patient qui devient le nouveau root (son contaminateur est à 0).
   
-- Test 6 : Cas avec 3 patients dans 3 fichiers différents.
+- [Test 6](https://github.com/kamilcglr/hpp_project_gr6/tree/dev/src/main/resources/input_test/test6): Cas avec 3 patients dans 3 fichiers différents.
 
-- Test 7 : Cas d’égalité de score.
+- [Test 7](https://github.com/kamilcglr/hpp_project_gr6/tree/dev/src/main/resources/input_test/test7): Cas d’égalité de score.
   
-- Test 8 : Cas de deux chaînes ayant la même racine.
+- [Test 8](https://github.com/kamilcglr/hpp_project_gr6/tree/dev/src/main/resources/input_test/test8): Cas de deux chaînes ayant la même racine.
   
-- Test 9 : Mise en évidence du score qui change en fonction des jours.
+- [Test 9](https://github.com/kamilcglr/hpp_project_gr6/tree/dev/src/main/resources/input_test/test9): Mise en évidence du score qui change en fonction des jours.
   
-- Test 10 : Cas avec 3 chaînes ayant la même racine.
+- [Test 10](https://github.com/kamilcglr/hpp_project_gr6/tree/dev/src/main/resources/input_test/test10): Cas avec 3 chaînes ayant la même racine.
 
-- Test 11 : Cas avec les fichiers de 5000 lignes de données en entrée. 
+- [Test 11](https://github.com/kamilcglr/hpp_project_gr6/tree/dev/src/main/resources/input_test/test11): Cas avec les fichiers de 5000 lignes de données en entrée. 
 
 <!-- Intégration continue -->
 ### Intégration continue
-Nous avons mis en place une pipeline qui vérifie qu'aucune régréssion n'a lieu sur notre branche principale. Nous avons utilisé Github Actions avec Maven. https://github.com/kamilcglr/hpp_project_gr6/actions
+Nous avons mis en place une pipeline qui vérifie qu'aucune régression n'a lieu sur notre branche principale. 
+Nous avons utilisé Github Actions avec Maven. https://github.com/kamilcglr/hpp_project_gr6/actions
 A chaque push sur dev ou master, on s'assure que :
 - Build : le projet se compile 
 - Test : les tests sont validés et une mesure de la couverture de code est réalisée
 - Package : un .jar est créé.
 
-<!-- Optmisisations -->
+<!-- Optimisations -->
 ## Optimisations apportées
 Une fois notre algorithme et notre code natif fonctionnant, nous avons apporté des modifications dans le but d'optimiser le code, notamment en temps. De ce fait, à chaque tentative d'optimisation, nous avons enregistré le temps d'exécution grâce au benchmark en fonction du nombre de données en entrée puis nous l'avons comparé avec le temps d'exécution sur le code natif, comme vous pouvez le voir sous le tableau ci-dessous : 
-![Table_part1](https://github.com/kamilcglr/hpp_project_gr6/tree/blob/dev/images/table1.png)
-![Table_part2](https://github.com/kamilcglr/hpp_project_gr6/tree/blob/dev/images/table2.png)
+![Table_part1](https://github.com/kamilcglr/hpp_project_gr6/tree/blob/dev/images/results_table.png)
 
 
 Avec ces calculs, nous avons donc obtenus les graphiques suivants, mettant en évidence l'évolution du temps d'exécution en fonction du changement opéré : 
