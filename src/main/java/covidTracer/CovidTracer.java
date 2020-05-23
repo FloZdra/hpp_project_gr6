@@ -193,9 +193,16 @@ class addNewPersonRunnable implements Runnable {
 
     public void addNewPerson() {
 
+        int i = 0;
+
         while (CovidTracer.readThread.isAlive() || !blockingQueueRead.isEmpty()) {
             if (!blockingQueueRead.isEmpty()) {
                 try {
+                    if (i % 5000 == 0) {
+                        System.out.println(i);
+                    }
+                    i++;
+
                     Person new_person = blockingQueueRead.take();
 
                     // Update Part
