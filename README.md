@@ -105,157 +105,25 @@ BenchmarkCovidTracer.benchmarkCovidTracer    5000  avgt   50    96,33 ± 5,888  
 ## Tests
 La première étape de notre projet fût la conception de tests. En effet, afin de s'assurer que nos modifications dans le code n'apportaient pas d'erreur dans l'algorithme, nous avons effectué plusieurs tests vérifiant plusieurs cas. 
 
-- Test 1 : Exemple du sujet.
-  Fichiers d'entrée : 
-  France
-  1, "Cerise", "Dupond", "21/01/1963", 1584540000, unknown, " "
-  2, "Hervé", "Renoir", "11/03/1971", 1584712800, unknown, " "
-  Italy
-  3, "Valentina", "Rossi", "21/01/1963", 1584644400, 1, " "
-  4, "Marco", "Guili", "06/01/1956", 1585324800, unknown, " "
-  5, "Stella", "Capelli", "21/01/1949", 1587312000, 4, " "
-  Spain
-  6, "Ricardo", "Rodriguez", "03/10/1964", 1587052800, 4, " "
-  
+- [Test 1](https://github.com/kamilcglr/hpp_project_gr6/tree/dev/src/main/resources/input_test/test1) : Exemple du sujet.
+
 - Test 2 : Cas d'une personne faisant remonter une chaîne basse dans le classement. 
-  Fichier d'entrée : 
-  France 
-  1, "Cerise", "Dupond", "21/01/1963", 1584540000, "unknown" (18/03/2020) 
-  2, "Valentina", "Rossi", "21/01/1963", 1584579600, "1" (19/03/2020) 
-  3, "Hervé", "Renoir", "11/03/1971", 1584712800, "unknown" (20/03/2020) 
-  4, "Marco", "Guili", "06/01/1956", 1585324800, "unknown" (27/03/2020)
-  7, "Jamel", "Debbouze", "01/01/1973", 1585357200, "1" (28/03/2020) 
-  
-  Fichier de sortie : 
-  France, 1, 10;
-  France, 1, 20;
-  France, 1, 20; France, 3, 10;
-  France, 4, 10; France, 1, 8; France, 3, 4;
-  France, 1, 14; France, 4, 10; France, 1, 8;
-  
+
 - Test 3 : Cas de deux personnes avec la même date de contamination.
-  Fichier d'entrée :  
-  France
-  1, "Cerise", "Dupond", "21/01/1963", 1584540000, unknown, " "
-  2, "Hervé", "Renoir", "11/03/1971", 1584540000, unknown, " "
-  
-  Fichier de sortie : 
-  France, 1, 10;
-  France, 1, 10; France, 2, 10;
  
 - Test 4 : Plus de 4 chaînes en mémoire.
-  Fichier d'entrée : 
-  France
-  1, "Valentina", "Rossi", "21/01/1963", 1584489600, unknown, " "
-  2, "Cerise", "Dupond", "21/01/1963", 1584576000, 1, " "
-  3, "Hervé", "Renoir", "11/03/1971", 1584662400, unknown, " "
-  4, "El", "Profesor", "03/10/1975", 1584748800, unknown, " "
-  5, "Marco", "Guili", "06/01/1956", 1585267200, 3, " "
-  6, "Ricardo", "Rodriguez", "03/10/1964", 1585440000, 4, " "
-  7, "Farid", "Ben", "03/10/1964", 1586390400, 5, " "
-  8, "Ciro", "Barilla", "03/10/2001", 1586908800, 6, " "
-  
-  Fichier de sortie : 
-  France, 1, 10;
-  France, 1, 20;
-  France, 1, 20; France, 3, 10;
-  France, 1, 20; France, 3, 10; France, 4, 10;
-  France, 3, 20; France, 4, 10; France, 1, 8;
-  France, 3, 14; France, 4, 14; France, 1, 8;
-  France, 3, 14; France, 4, 4;
-  France, 3, 10; France, 8, 10;
 
 - Test 5 : Cas avec un patient qui devient le nouveau root (son contaminateur est à 0).
-  Fichier d'entrée :
-  France
-  1, "Cerise", "Dupond", "21/01/1963", 1584547200, unknown, " "
-  2, "Valentina", "Rossi", "21/01/1963", 1584633600, 1, " "
-  3, "Ricardo", "Rodriguez", "03/10/1964", 1586102400, 1, " "
-  
-  Fichier de sortie : 
-  France, 1, 10;
-  France, 1, 20;
-  France, 3, 10;
   
 - Test 6 : Cas avec 3 patients dans 3 fichiers différents.
-  Fichiers d'entrée : 
-  France
-  1, "Cerise", "Dupond", "21/01/1963", 1584493200, unknown, " "
-  Italy 
-  2, "Valentina", "Rossi", "21/01/1963", 1584579600, unknown, " "
-  Spain
-  3, "Ricardo", "Rodriguez", "03/10/1964", 1584666000, unknown, " "
-  
-  Fichier de sortie :
-  France, 1, 10;
-  France, 1, 10; Italy, 2, 10;
-  France, 1, 10; Italy, 2, 10; Spain, 3, 10;
-  
+
 - Test 7 : Cas d’égalité de score.
-  Fichier d'entrée : 
-  France
-  1, "Cerise", "Dupond", "21/01/1963", 1584493200, unknown, " "
-  2, "Valentina", "Rossi", "21/01/1963", 1584579600, unknown, " "
-  3, "Ricardo", "Rodriguez", "03/10/1964", 1585270800, unknown, " "
-  
-  Fichier de sortie :
-  France, 1, 10;
-  France, 1, 10; France, 2, 10;
-  France, 3, 10; France, 1, 4; France, 2, 4;
   
 - Test 8 : Cas de deux chaînes ayant la même racine.
-   Fichier d'entrée : 
-  France
-  1, "Cerise", "Dupond", "21/01/1963", 1584540000, unknown, " "
-  2, "Hervé", "Renoir", "11/03/1971", 1584558000, 1, " "
-  3, "Simone", "Proust", "11/03/1975", 1584712800, 2, " "
-  4, "Edouard", "Elric", "30/08/1987", 1584799200, 3, " "
-  5, "Jhon", "Smith", "26/04/1982", 1584885600, 2, " "
-  
-  Fichier de sortie :
-  France, 1, 10;
-  France, 1, 20;
-  France, 1, 30;
-  France, 1, 40;
-  France, 1, 40; France, 1, 30;
   
 - Test 9 : Mise en évidence du score qui change en fonction des jours.
-  Fichier d'entrée :
-  France
-  1, "Cerise", "Dupond", "21/01/1963", 1583071200, "unknown" (01/03/2020 à 14:00:00)
-  2, "Hervé", "Renoir", "11/03/1971", 1583676000, "1" (08/03/2020 à 14:00:00 )
-  3, "Simone", "Proust", "11/03/1975", 1583679600, "2" (08/03/2020 à 15:00:00 )
-  4, "Edouard", "Elric", "30/08/1987", 1584280800, "3" (15/03/2020 à 14:00:00)
-  5, "Jhon", "Smith", "26/04/1982", 1584284400, "4" (15/03/2020 à 15:00:00)
-  6, "Vincent", "Szymanski", "26/04/1982", 1585501200, "4" (29/03/2020 à 17:00:00)
-  
-  Fichier de sortie :
-  France, 1, 10;
-  France, 1, 20;
-  France, 1, 24;
-  France, 1, 34;
-  France, 1, 34;
-  France, 6, 10;
   
 - Test 10 : Cas avec 3 chaînes ayant la même racine.
-  Fichier d'entrée :
-  France :
-  1, "Cerise", "Dupond", "21/01/1963", 1583071200, unknown, " "
-  2, "Hervé", "Renoir", "11/03/1971", 1583071201, 1, " "
-  3, "Simone", "Proust", "11/03/1975", 1583071202, 1, " "
-  4, "Edouard", "Elric", "30/08/1987", 1583071203, 2, " "
-  5, "Jhon", "Smith", "26/04/1982", 1583071204, 2, " "
-  6, "Vincent", "Szymanski", "26/04/1982", 1583071205, 3, " "
-  7, "Lisa", "Calero", "31/12/1998", 1583071206, 3, " "
-  
-  Fichier de sortie :
-  France, 1, 10;
-  France, 1, 20;
-  France, 1, 20; France, 1, 20;
-  France, 1, 30; France, 1, 20;
-  France, 1, 30; France, 1, 30; France, 1, 20;
-  France, 1, 30; France, 1, 30; France, 1, 30;
-  France, 1, 30; France, 1, 30; France, 1, 30;
 
 - Test 11 : Cas avec les fichiers de 5000 lignes de données en entrée. 
 
@@ -269,19 +137,19 @@ A chaque push sur dev ou master, on s'assure que :
 
 <!-- Optmisisations -->
 ## Optimisations apportées
-Une fois notre algorithme et notre code natif fonctionnant, nous avons apporté des modifications dans le but d'optimiser le code, notamment en temps. De ce fait, à chaque tentative d'optimisation, nous avons enregistré le temps d'exécution grâce au Benchmark en fonction du nombre de données en entrée puis nous l'avons comparé avec le temps d'exécution sur le code natif, comme vous pouvez le voir sous le tableau ci-dessous : 
+Une fois notre algorithme et notre code natif fonctionnant, nous avons apporté des modifications dans le but d'optimiser le code, notamment en temps. De ce fait, à chaque tentative d'optimisation, nous avons enregistré le temps d'exécution grâce au benchmark en fonction du nombre de données en entrée puis nous l'avons comparé avec le temps d'exécution sur le code natif, comme vous pouvez le voir sous le tableau ci-dessous : 
 ![Table_part1](https://github.com/kamilcglr/hpp_project_gr6/tree/blob/dev/images/table1.png)
 ![Table_part2](https://github.com/kamilcglr/hpp_project_gr6/tree/blob/dev/images/table2.png)
 
 
 Avec ces calculs, nous avons donc obtenus les graphiques suivants, mettant en évidence l'évolution du temps d'exécution en fonction du changement opéré : 
 - Avec JMH :
-![20_et_5k](https://github.com/kamilcglr/hpp_project_gr6/blob/dev/images/img1_avecJMH.PNG)
-![1M](https://github.com/kamilcglr/hpp_project_gr6/tree/blob/dev/images/img2_avecJMH.png)
+![20](https://github.com/kamilcglr/hpp_project_gr6/blob/dev/images/20.PNG)
+![5k](https://github.com/kamilcglr/hpp_project_gr6/blob/dev/images/5K.PNG)
+![20_5Kk](https://github.com/kamilcglr/hpp_project_gr6/blob/dev/images/20_5K.PNG)
 
 - Sans JMH :
-![20](https://github.com/kamilcglr/hpp_project_gr6/tree/blob/dev/images/img1_sansJMH.png)
-![5k](https://github.com/kamilcglr/hpp_project_gr6/tree/blob/dev/images/img2_sansJMH.png)
+![1M](https://github.com/kamilcglr/hpp_project_gr6/blob/dev/images/1M.PNG)
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
