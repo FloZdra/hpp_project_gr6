@@ -148,11 +148,11 @@ A chaque push sur dev ou master, on s'assure que :
 Une fois notre algorithme et notre code natif fonctionnant, nous avons apporté des modifications dans le but d'optimiser le code, notamment en temps. 
 De ce fait, à chaque tentative d'optimisation, nous avons enregistré le temps d'exécution grâce au benchmark jmh selon différentes tailles de fichiers.
 Puis nous l'avons comparé avec le temps d'exécution de la précédente optimisation.
-![Results_table](https://github.com/kamilcglr/hpp_project_gr6/tree/blob/dev/images/results_table.png)
+![Results_table](https://github.com/kamilcglr/hpp_project_gr6/blob/dev/images/results_table.png)
 
 Sur ce second tableau, on peut voir que globalement, entre le premier algorithme naif et la dernière optimisation le temps
 d'éxécution a été divisé par 10 (pour 5000). 
-![Results_table_global](https://github.com/kamilcglr/hpp_project_gr6/tree/blob/dev/images/results_table_global.png)
+![Results_table_global](https://github.com/kamilcglr/hpp_project_gr6/blob/dev/images/results_table_global.png)
 
 Avec ces résultats, nous avons donc obtenus les graphiques suivants, mettant en évidence l'évolution du temps d'exécution en fonction du changement opéré : 
 - Avec JMH :
