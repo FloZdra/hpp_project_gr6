@@ -88,8 +88,8 @@ public class CovidTracer {
             }
         }
 
-        blockingQueueRead = new LinkedBlockingDeque<>(10000);
-        blockingQueueWrite = new LinkedBlockingDeque<>(5000);
+        blockingQueueRead = new LinkedBlockingDeque<>(50000);
+        blockingQueueWrite = new LinkedBlockingDeque<>(100);
         //ExecutorService executor = Executors.newFixedThreadPool(3);
 
         // TODO optimize parameters (not necessary to be global)
@@ -122,11 +122,16 @@ public class CovidTracer {
 
         int i = 0;
 
+
         while (CovidTracer.readThread.isAlive() || !blockingQueueRead.isEmpty()) {
+
+
             if (!blockingQueueRead.isEmpty()) {
                 try {
                     if (i % 5000 == 0) {
                         System.out.println(i);
+                        System.out.println("BlockingQueue Read size = " + blockingQueueRead.size());
+                        System.out.println("BlockingQueue Write size = " + blockingQueueWrite.size());
                     }
                     i++;
 
