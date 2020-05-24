@@ -188,24 +188,8 @@ public class Tree {
         return chains;
     }
 
-    public void setChains(List<Chain> chains) {
-        this.chains = chains;
-    }
-
-    public Person getRoot() {
-        return root;
-    }
-
-    public void setRoot(Person root) {
-        this.root = root;
-    }
-
     public List<Person> getWhere_update() {
         return where_update;
-    }
-
-    public void setWhere_update(List<Person> where_update) {
-        this.where_update = where_update;
     }
 
     public List<Person> getWaitingList() {

@@ -1,12 +1,10 @@
 package dto;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class PeopleHashMap {
 
-    private static final HashMap<Integer, Person> hashMap = new HashMap<Integer, Person>();
+    private static final HashMap<Integer, Person> hashMap = new HashMap<>();
 
     public static void addPersonToMap(Person p) {
         hashMap.put(p.getId(), p);

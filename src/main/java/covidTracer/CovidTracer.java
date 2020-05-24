@@ -14,10 +14,10 @@ import java.util.*;
 
 public class CovidTracer {
 
-    List<URL> url_files;
+    final List<URL> url_files;
     PrintWriter writer = null;
 
-    List<Tree> trees = new ArrayList<>();
+    final List<Tree> trees = new ArrayList<>();
 
     Chain top_1_chain = null;
     Chain top_2_chain = null;
@@ -298,7 +298,7 @@ public class CovidTracer {
         try {
             InputStream inputStream = getClass().getResource("/output_generated/output.csv").openStream();
             FileOutputStream fileOS = new FileOutputStream("src/main/resources/output_generated/output.csv");
-            int i = IOUtils.copy(inputStream, fileOS);
+            IOUtils.copy(inputStream, fileOS);
 
         } catch (IOException e) {
             e.printStackTrace();

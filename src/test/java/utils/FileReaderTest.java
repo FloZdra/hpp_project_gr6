@@ -2,8 +2,6 @@ package utils;
 
 import org.junit.jupiter.api.*;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,9 +36,7 @@ public class FileReaderTest {
     public void testCloseFile() {
         fileReader.closeFile();
         String expectedMessage = "Stream closed";
-        Exception exception = assertThrows(IOException.class, () -> {
-            fileReader.getInputStream().available();
-        });
+        Exception exception = assertThrows(IOException.class, () -> fileReader.getInputStream().available());
         String actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains(expectedMessage));
     }

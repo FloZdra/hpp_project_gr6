@@ -96,32 +96,16 @@ public class Person implements Comparable<Person>, Cloneable {
         return country;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public int getDiagnosed_ts() {
         return diagnosed_ts;
     }
 
-    public void setDiagnosed_ts(int diagnosed_ts) {
-        this.diagnosed_ts = diagnosed_ts;
-    }
-
     public int getContaminated_by_id() {
         return contaminated_by_id;
-    }
-
-    public void setContaminated_by_id(int contaminated_by_id) {
-        this.contaminated_by_id = contaminated_by_id;
     }
 
     public int getWeight() {
@@ -142,10 +126,6 @@ public class Person implements Comparable<Person>, Cloneable {
 
     public List<Person> getInfect() {
         return infect;
-    }
-
-    public void setInfect(List<Person> infect) {
-        this.infect = infect;
     }
 
     public Tree getTree_in() {

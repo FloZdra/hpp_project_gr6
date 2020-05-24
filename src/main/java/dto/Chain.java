@@ -33,10 +33,6 @@ public class Chain implements Comparable<Chain> {
         return root;
     }
 
-    public void setRoot(Person root) {
-        this.root = root;
-    }
-
     public Person getEnd() {
         return end;
     }
