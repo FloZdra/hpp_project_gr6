@@ -87,24 +87,6 @@ mvn install
 ```
 3. Lancez le main dans la classe main. Vous pouvez choisir la taille du fichier 20, 5000 ou 1000000 lignes.
 
-<!-- Benchmarks -->
-## Benchmark
-```java
-@BenchmarkMode(Mode.AverageTime)
-@OutputTimeUnit(TimeUnit.MILLISECONDS)
-@Warmup(iterations = 3)
-@Measurement(iterations = 5)
-@State(Scope.Benchmark) //
-```
-JMH a été configuré afin d'exécuter 3 tours de chauffe (sans prise de mesures) puis 5 itérations durant lesquelles le temps d'éxécution moyen est mesuré. Cette opération est effectuée 10 fois pour chaque taille de fichier (20 et 5000).
-
-En sortie, vous aurez alors le temps moyen (score) pour chaque taille avec l'erreur (error) en millisecondes.
-```sh
-Benchmark                                  (size)  Mode  Cnt    Score   Error  Units
-BenchmarkCovidTracer.benchmarkCovidTracer      20  avgt   50    1,233 ± 0,022  ms/op
-BenchmarkCovidTracer.benchmarkCovidTracer    5000  avgt   50    96,33 ± 5,888  ms/op
-```
-
 <!-- Tests -->
 ## Tests
 La première étape de notre projet fût la conception de tests d'intégrations et de tests unitaires. 
@@ -141,6 +123,24 @@ A chaque push sur dev ou master, on s'assure que :
 - Build : le projet se compile 
 - Test : les tests sont validés et une mesure de la couverture de code est réalisée
 - Package : un .jar est créé.
+
+<!-- Benchmarks -->
+## Benchmark
+```java
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
+@Warmup(iterations = 3)
+@Measurement(iterations = 5)
+@State(Scope.Benchmark) //
+```
+JMH a été configuré afin d'exécuter 3 tours de chauffe (sans prise de mesures) puis 5 itérations durant lesquelles le temps d'éxécution moyen est mesuré. Cette opération est effectuée 10 fois pour chaque taille de fichier (20 et 5000).
+
+En sortie, vous aurez alors le temps moyen (score) pour chaque taille avec l'erreur (error) en millisecondes.
+```sh
+Benchmark                                  (size)  Mode  Cnt    Score   Error  Units
+BenchmarkCovidTracer.benchmarkCovidTracer      20  avgt   50    1,233 ± 0,022  ms/op
+BenchmarkCovidTracer.benchmarkCovidTracer    5000  avgt   50    96,33 ± 5,888  ms/op
+```
 
 <!-- Optimisations -->
 ## Optimisations apportées
