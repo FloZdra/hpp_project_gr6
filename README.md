@@ -19,7 +19,7 @@
 
 
 <!-- TABLE OF CONTENTS -->
-## Table of Contents
+## Sommaire
 
 * [A propos](#à-propos-du-projet)
   * [Réalisé avec](#réalisé-avec)
