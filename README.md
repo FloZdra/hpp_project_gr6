@@ -17,7 +17,7 @@
   </p>
 </p>
 
-Branche master sans multithreading : https://github.com/kamilcglr/hpp_project_gr6/tree/master
+Branche master sans multithreading : https://github.com/kamilcglr/hpp_project_gr6/tree/master  
 Branche dev avec mutithreading : https://github.com/kamilcglr/hpp_project_gr6/tree/dev
 
 <!-- TABLE OF CONTENTS -->
