@@ -122,7 +122,6 @@ public class CovidTracer {
 
         int i = 0;
 
-
         while (CovidTracer.readThread.isAlive() || !blockingQueueRead.isEmpty()) {
 
 
@@ -130,8 +129,6 @@ public class CovidTracer {
                 try {
                     if (i % 5000 == 0) {
                         System.out.println(i);
-                        System.out.println("BlockingQueue Read size = " + blockingQueueRead.size());
-                        System.out.println("BlockingQueue Write size = " + blockingQueueWrite.size());
                     }
                     i++;
 
