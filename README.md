@@ -20,7 +20,6 @@
 
 <!-- TABLE OF CONTENTS -->
 ## Sommaire
-
 * [A propos](#à-propos-du-projet)
   * [Réalisé avec](#réalisé-avec)
   * [Auteurs](#auteurs)
@@ -35,7 +34,7 @@
 <!-- ABOUT THE PROJECT -->
 ## À propos du projet
 Ce projet a été réalisé dans le cadre de l'option programmation haute performance.
-Le but est de trouver les trois plus grandes chaines de contaminations dans des fichiers csv.
+Le but est de trouver les trois plus grandes chaines de contaminations dans des fichiers *.csv.
 La taille des échantillons varie de 20 à 1 000 0000. L'objectif est donc d'avoir un programme performant en traitant
 les données d'une manière optimale et rapide.
 
@@ -54,7 +53,7 @@ Florian ZDRADA - florian.zdrada@telecom-st-etienne.fr
 
 <!-- GETTING STARTED -->
 ## Commmencer
-Afin d'éxécuter l'application deux solutions s'offrent à vous :
+Afin d'exécuter l'application deux solutions s'offrent à vous :
 - lancer un benchmark jmh
 - lancer directement le projet dans votre IDE
 
@@ -72,12 +71,12 @@ git clone https://github.com/kamilcglr/hpp_project_gr6.git
 ```sh
 mvn install
 ```
-3. Vous pouvez ensuite lancer un benchmark en éxécutant :
+3. Vous pouvez ensuite lancer un benchmark en exécutant :
 ```sh
  java -jar target/benchmarks.jar 
  ```
  
-Si vous souhaitez executer le projet dans votre IDE ou modifier le code source
+Si vous souhaitez exécuter le projet dans votre IDE ou modifier le code source
 1. Clonez le repo
 ```sh
 git clone https://github.com/kamilcglr/hpp_project_gr6.git
@@ -97,7 +96,7 @@ mvn install
 @Measurement(iterations = 5)
 @State(Scope.Benchmark) //
 ```
-JMH a été configuré afin d'éxécuter 3 tours de chauffe (sans prise de mesures) puis 5 itérations durant lesquelles le temps d'éxécution moyen est mesuré. Cette opération est effectuée 10 fois pour chaque taille de fichier (20 et 5000).
+JMH a été configuré afin d'exécuter 3 tours de chauffe (sans prise de mesures) puis 5 itérations durant lesquelles le temps d'éxécution moyen est mesuré. Cette opération est effectuée 10 fois pour chaque taille de fichier (20 et 5000).
 
 En sortie, vous aurez alors le temps moyen (score) pour chaque taille avec l'erreur (error) en millisecondes.
 ```sh
@@ -163,7 +162,7 @@ Pour 20, l'optimisation ne peut pas être mesurée du fait de la taille très pe
 ![20_5Kk](https://github.com/kamilcglr/hpp_project_gr6/blob/dev/images/20_5K.PNG)
 
 - Sans JMH (trop long) :
-Nous n'avons pas effectué de mesure avec l'algorithme naif pour 1 Million, le temps d'éxécution était beaucoup trop long (en jours).
+Nous n'avons pas effectué de mesure avec l'algorithme naif pour 1 Million, le temps d'exécution était beaucoup trop long (en jours).
 ![1M](https://github.com/kamilcglr/hpp_project_gr6/blob/dev/images/1M.PNG)
 
 <!-- MARKDOWN LINKS & IMAGES -->
