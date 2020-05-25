@@ -4,7 +4,7 @@ import java.util.ArrayList;
 public class Main {
     private static final ArrayList<URL> urls = new ArrayList<>();
 
-    private static final String size = "20";
+    private static final String size = "5000";
 
     private static final URL france = Main.class.getResource("/data/" + size + "/France.csv");
     private static final URL italy = Main.class.getResource("/data/" + size + "/Italy.csv");
@@ -20,9 +20,15 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println("Starting analysis");
+        long startTime = System.nanoTime();
         init();
         covidTracer.CovidTracer covidTracer = new covidTracer.CovidTracer(urls);
         covidTracer.launchAnalysis();
+        long endTime = System.nanoTime();
         System.out.println("Successful analysis");
+        long timeElapsed = endTime - startTime;
+
+        System.out.println("Execution time : " +
+                timeElapsed / 1000000000.0 + " s");
     }
 }
